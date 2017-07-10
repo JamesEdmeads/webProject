@@ -15,17 +15,16 @@ function addNewUser(userName, pWord, owner)  {
   try {
     ps.run(userName, pWord, owner);
     ps.finalize();
-    return true;
   }catch(err) {
     return false;
   }
+  return true;
   
 }
 
 /* NEED:
   get user id
   add media
-  add associate
   add mediaassociate
   get associattion person 
   get association media
@@ -33,10 +32,45 @@ function addNewUser(userName, pWord, owner)  {
 */
 module.exports = {
 
+  //TODO: tidy up
+  associate: function(userName, owner, execute)  {
+    var ps = db.prepare("select * from person where uname = ?");
+  
+    try {
+      ps.get(owner, check);
+      function check(err, row) {
+        try {
+          if(row.uname !== owner) {
+            console.log("not the same");
+            console.log(row.uname);
+            execute("fail");
+          }
+          var ps = db.prepare("insert into personAssociate (owner, associate) values (?,?)");
+          try {
+            ps.run(owner, userName);
+            ps.finalize();
+          }
+          catch(err) {
+            execute("fail");
+          }
+          execute("success");
+        }
+        catch(err) {
+          execute("fail");
+        }
+
+      }     
+    }
+    catch(err) {
+      execute("fail");
+    }
+
+  },
+
   addUser: function (userName, pWord, owner, execute)  {
     //need to add association
     if(addNewUser(userName, pWord, owner)){
-      execute("success?"+userName);
+      execute("success?"+userName+"?"+owner);
     }
     else {
       execute("fail");

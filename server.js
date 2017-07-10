@@ -51,7 +51,7 @@ function handleHTTP(request, response) {
       case "/newuser" : newUser(requestURL[1], requestURL[2], requestURL[3], response, type); break;
       case "/login" : login(requestURL[1], requestURL[2], response, type); break;
       case "/upload" : check(request, response, type); break;
-      case "/associate" : associate(requestURL[1], response, type); break;
+      case "/associate" : associate(requestURL[1], requestURL[2], response, type); break;
       default: defaultReply(response, type, url);
 
     }
@@ -63,9 +63,8 @@ function handleHTTP(request, response) {
 
 }
 
-function associate(name, response, type)  {
-    //db to do
-    execute(name);
+function associate(name, owner, response, type)  {
+    dbFunction.associate(name, owner, execute);
     function execute(result) {
       var textTypeHeader = { "Content-Type": "text/plain" };
       response.writeHead(200, textTypeHeader);

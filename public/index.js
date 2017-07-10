@@ -21,7 +21,7 @@ function submit()  {
       var response = response.split("?");
       switch(response[0])  {
         case "fail": document.getElementById("response").innerHTML = "failed: please try again";break;
-        case "success": newUser(response[1]);break;
+        case "success": newUser(response[1], response[2]);break;
         default: window.location.href = "index.html";
 
       }
@@ -29,11 +29,10 @@ function submit()  {
   }
 }
 
-function newUser(response)  {
-  sessionStorage.setItem('id', response);
+function newUser(id, owner)  {
+  sessionStorage.setItem('id', id);
+  sessionStorage.setItem('owner', owner);
   window.location.href = "/intropage.html";
-  //re-direct(); to go to new user page
-
 }
 
 function login()  {
