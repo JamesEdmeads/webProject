@@ -48,8 +48,10 @@ function handleHTTP(request, response) {
     var type = findType(url, request);
 
     switch (requestURL[0])  {
+      case "/newuser" : newUser(requestURL[1], requestURL[2], requestURL[3], response, type); break;
       case "/login" : login(requestURL[1], requestURL[2], response, type); break;
       case "/upload" : check(request, response, type); break;
+      case "/associate" : associate(requestURL[1], response, type); break;
       default: defaultReply(response, type, url);
 
     }
@@ -61,7 +63,32 @@ function handleHTTP(request, response) {
 
 }
 
+function associate(name, response, type)  {
+    //db to do
+    execute(name);
+    function execute(result) {
+      var textTypeHeader = { "Content-Type": "text/plain" };
+      response.writeHead(200, textTypeHeader);
+      response.write(result);
+      response.end();
+    }
+}
+
+function login(name, pw, response, type)  {
+
+  var user = dbFunction.checkUser(name, pw, execute);
+
+    function execute(result) {
+      var textTypeHeader = { "Content-Type": "text/plain" };
+      response.writeHead(200, textTypeHeader);
+      response.write(result);
+      response.end();
+    }
+
+}
+
 function check(request, response, type) {
+  //need to change file path to userid
   var form = new formidable.IncomingForm();
   form.parse(request);
   console.log("here");
@@ -71,21 +98,21 @@ function check(request, response, type) {
 
   form.on('file', function(name, file)  {
     console.log('Uploaded' + file.name);
+    dbFunction.addMedia(file.name, file.path, "jim", "jim0" )
     renderHTML("public/upload.html", response, type);
   });
 
 }
 
-function login(name, pw, response, type)  {
-
-    var user = dbFunction.checkUser(name, pw , execute);
+function newUser(name, pw, owner, response, type)  {
+    console.log("here new user");
+    var user = dbFunction.addUser(name, pw, owner, execute);
 
     function execute(result) {
       var textTypeHeader = { "Content-Type": "text/plain" };
       response.writeHead(200, textTypeHeader);
       response.write(result);
       response.end();
-      console.log("executing.........");
     }
 
 }
