@@ -38,7 +38,7 @@ function newUser()  {
 }
 
 function loggedIn()  {
-  document.getElementById("response").innerHTML = "success";
+  document.getElementById("response").innerHTML = "<p>success</p>";
 
 }
 

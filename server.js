@@ -11,6 +11,7 @@
   
 */
 var http = require("http");
+var formidable = require("formidable");
 var QS = require("querystring");
 var fs = require("fs");
 var OK = 200, NotFound = 404, BadType = 415, Error = 500;
@@ -48,6 +49,7 @@ function handleHTTP(request, response) {
 
     switch (requestURL[0])  {
       case "/login" : login(requestURL[1], requestURL[2], response, type); break;
+      case "/upload" : check(request, response, type); break;
       default: defaultReply(response, type, url);
 
     }
@@ -56,6 +58,21 @@ function handleHTTP(request, response) {
     //var file = "./public" + url;
     //fs.readFile(file, ready);
     //function ready(err, content) { deliver(response, type, err, content); }
+
+}
+
+function check(request, response, type) {
+  var form = new formidable.IncomingForm();
+  form.parse(request);
+  console.log("here");
+  form.on('fileBegin', function (name, file){
+    console.log("now here");
+    file.path = "files/"+file.name;});
+
+  form.on('file', function(name, file)  {
+    console.log('Uploaded' + file.name);
+    renderHTML("public/upload.html", response, type);
+  });
 
 }
 
