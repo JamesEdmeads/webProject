@@ -76,7 +76,6 @@ function associate(name, owner, response, type)  {
 function login(name, pw, response, type)  {
 
   var user = dbFunction.checkUser(name, pw, execute);
-
     function execute(result) {
       var textTypeHeader = { "Content-Type": "text/plain" };
       response.writeHead(200, textTypeHeader);
@@ -106,20 +105,20 @@ function check(request, response, type) {
 function newUser(name, pw, owner, response, type)  {
     console.log("here new user");
     var user = dbFunction.addUser(name, pw, owner, execute);
-
     function execute(result) {
       var textTypeHeader = { "Content-Type": "text/plain" };
       response.writeHead(200, textTypeHeader);
       response.write(result);
       response.end();
     }
-
 }
 
 
 ////////////////////////////////////////////////////////////
 //                          delivery                      //
 ////////////////////////////////////////////////////////////
+
+    
 
 // Loads the website if it is allowed
 function defaultReply(response, type, url){

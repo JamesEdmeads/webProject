@@ -19,9 +19,11 @@ function submit()  {
     if(this.readyState === 4 && this.status === 200) {
       var response = this.responseText;
       var response = response.split("?");
+      console.log(response[0]);
       switch(response[0])  {
         case "fail": document.getElementById("response").innerHTML = "failed: please try again";break;
         case "success": newUser(response[1], response[2]);break;
+        case "alreadyExists": document.getElementById("response").innerHTML = "user already exists. Choose a new username";break;
         default: window.location.href = "index.html";
 
       }
@@ -30,8 +32,11 @@ function submit()  {
 }
 
 function newUser(id, owner)  {
+  console.log("here now in newUser", id, owner);
   sessionStorage.setItem('id', id);
   sessionStorage.setItem('owner', owner);
+  console.log(sessionStorage.getItem('id'));
+  console.log(sessionStorage.getItem('owner'));
   window.location.href = "/intropage.html";
 }
 
@@ -51,8 +56,9 @@ function login()  {
       var response = this.responseText;
       var response = response.split("?");
       switch(response[0])  {
-        case "Fail": redo(); break;
+        case "wrong": redo(); break;
         case "success" : loggedIn(response[1]); break;
+        case "fail": document.getElemtentById("response").innerHTML = "please try again";
         default: window.location.href = "index.html";
 
       }
