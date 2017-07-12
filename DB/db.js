@@ -49,7 +49,7 @@ module.exports = {
           execute("wrong");
         }
         else{
-          execute("success?"+userName);
+          execute("success?"+userName+"?"+row.owner);
         }
       }catch(err){
         execute("fail");

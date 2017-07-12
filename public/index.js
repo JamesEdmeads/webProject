@@ -2,6 +2,7 @@
 
 addEventListener('load', setUp);
 
+//for new users
 function submit()  {
 
   var name = document.getElementById("name").value;
@@ -32,14 +33,12 @@ function submit()  {
 }
 
 function newUser(id, owner)  {
-  console.log("here now in newUser", id, owner);
   sessionStorage.setItem('id', id);
   sessionStorage.setItem('owner', owner);
-  console.log(sessionStorage.getItem('id'));
-  console.log(sessionStorage.getItem('owner'));
   window.location.href = "/intropage.html";
 }
 
+//for existing users
 function login()  {
 
   var name = document.getElementById('eUser').value;
@@ -57,7 +56,7 @@ function login()  {
       var response = response.split("?");
       switch(response[0])  {
         case "wrong": redo(); break;
-        case "success" : loggedIn(response[1]); break;
+        case "success" : loggedIn(response[1], response[2]); break;
         case "fail": document.getElemtentById("response").innerHTML = "please try again";
         default: window.location.href = "index.html";
 
@@ -67,11 +66,12 @@ function login()  {
   }
 }
 
-function loggedIn(response)  {
+function loggedIn(response, owner)  {
   
   sessionStorage.setItem('id', response);
+  sessionStorage.setItem('owner', owner);
   document.getElementById("response").innerHTML = "<p>success</p>";
-  //re-direct
+  window.location.href = "choice.html";
 
 }
 function redo() {
@@ -93,8 +93,7 @@ function show0()  {
 
 function setUp()  {
   
-  var formSubmit = document.getElementById('formSend');
-  formSubmit.addEventListener('click', submit);
+  document.getElementById('formSend').addEventListener('click', submit);
   document.getElementById('newUser').addEventListener('click', show);
   document.getElementById('login').addEventListener('click', show0);
   document.getElementById('send').addEventListener('click', login);
