@@ -6,6 +6,29 @@ var exists = fs.existsSync(file);
 var sqlite3 = require("sqlite3").verbose();
 var db = new sqlite3.Database(file);
 
+  function getMediaAssociation(visual, execute)  {
+    var ps = db.prepare("select audio from mediaAssociate where "
+    +"visual = ?");
+    
+    try{
+      ps.all(visual, check);
+      function check(err, row) {
+        if(row === undefined){
+          execute("noAudio");
+        }
+        else{
+          var result;
+          for(var i = 0; i < row.length; i++) {
+            results = results + "?" + row.audio;
+          }
+          execute("success"+results);
+        }
+      }
+    }catch(err){
+      execute("fail");
+    }
+  }
+
 module.exports = {
 
   addUser: function(uName, pWord, owner, execute)  {
@@ -106,7 +129,8 @@ module.exports = {
       ps0.get(name, check);
       function check(err, row) {
         if(row !== undefined)  {
-          execute("alreadyExists");
+          console.log("alreadyExists");
+          execute();
         }
         else{
           var ps1 = db.prepare("insert into media "
@@ -114,14 +138,17 @@ module.exports = {
           try{
             ps1.run(name, place, creator, owner);
             ps1.finalize();
-            execute("success");
+            console.log("success");
+            execute();
           }catch(err){
-            execute("fail");
+            console.log("fail");
+            execute();
           }
         }
       }
     }catch(err){
-      execute("fail");
+      console.log("fail");
+      execute();
     }
   },
 
@@ -155,16 +182,24 @@ module.exports = {
 
   getMedia: function(name, execute)  {
 
-    var ps = db.prepare("select * from media where name = ?");
+    var ps = db.prepare("select * from media where owner = ?");
 
     try {
-      ps.get(name, check);
-      function check(err, row) {
-        if(row === undefined) {
+      ps.all(name, check);
+      function check(err, rows) {
+        if(rows === undefined || rows === null) {
           execute("notExist");
-        }
-        else {
-          execute("success?"+name+"?"+place);
+        } else {
+          var result = "";
+          rows.forEach(function(row) {
+            var check = row.name.split(".");
+            console.log("split", check);
+            if(check[1] !== "mp3") {
+              result = result +"?"+row.name+"?"+row.place;
+              console.log(result);
+            }
+          });
+          execute("success"+result);
         }
       }      
     }catch(err){

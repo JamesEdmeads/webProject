@@ -36,11 +36,11 @@ function startHTTP(port) {
 
 // Serve a request by delivering a file.
 function handleHTTP(request, response) {
-    console.log("here");
+
     console.log("URL = ",request.url);
     var url = request.url.toLowerCase();
     var requestURL = url.split("?");
-    console.log(requestURL);
+    console.log("Request URL = ",requestURL);
 
     if (url.endsWith("/")) url = url + "index.html";
     if(reject(url)) return fail(response, NotFound, "URL access refused");
@@ -52,6 +52,7 @@ function handleHTTP(request, response) {
       case "/login" : login(requestURL[1], requestURL[2], response, type); break;
       case "/upload" : check(request, response, type); break;
       case "/associate" : associate(requestURL[1], requestURL[2], response, type); break;
+      case "/display" : display(request, response, type); break;
       default: defaultReply(response, type, url);
 
     }
@@ -60,6 +61,18 @@ function handleHTTP(request, response) {
     //var file = "./public" + url;
     //fs.readFile(file, ready);
     //function ready(err, content) { deliver(response, type, err, content); }
+
+}
+
+function display(request, response, type)  {
+  dbFunction.getMedia("owner", execute);
+  function execute(result){
+      console.log("getmedia:", result);
+      var textTypeHeader = { "Content-Type": "text/plain" };
+      response.writeHead(200, textTypeHeader);
+      response.write(result);
+      response.end();
+  }
 
 }
 
@@ -87,18 +100,37 @@ function login(name, pw, response, type)  {
 
 function check(request, response, type) {
   //need to change file path to userid
-  var form = new formidable.IncomingForm();
-  form.parse(request);
-  console.log("here");
-  form.on('fileBegin', function (name, file){
-    console.log("now here");
-    file.path = "files/"+file.name;});
+  var name0, path, owner, creator;
 
-  form.on('file', function(name, file)  {
-    console.log('Uploaded' + file.name);
-    dbFunction.addMedia(file.name, file.path, "jim", "jim0" )
-    renderHTML("public/upload.html", response, type);
-  });
+    var form = new formidable.IncomingForm();
+    form.parse(request);
+
+    form.on('fileBegin', function (name, file){
+      
+      path = "files/"+file.name;
+      console.log("path: ", path);
+    });
+
+    form.on('file', function(name, file)  { 
+      name0 = file.name;
+      console.log("name: ", name0);
+    });
+
+    form.on('field', function(name, value) {
+      console.log("creator : ", value);
+      creator = value;
+    });
+
+    form.on('end', function(){
+      console.log("we get here");
+      console.log("name: ",name0, "path:", path, "creator:", creator);
+      dbFunction.addMedia(name0, path, creator, creator, execute ); //tochange
+      function execute() {
+        console.log("executing");
+        renderHTML("./public/update.html", response, type);
+      }
+    });
+  
 
 }
 
@@ -123,8 +155,15 @@ function newUser(name, pw, owner, response, type)  {
 // Loads the website if it is allowed
 function defaultReply(response, type, url){
 
+    //this will need to change to be secure
     if (type === null) return fail(response, BadType, "File type unsupported");
-    var file = "./public" + url;
+    var place = url.lastIndexOf(".");
+    var bit = url.substring(place);
+    if(bit === ".jpg" || bit === ".mp3") {
+      var file = "."+url;
+    }else{
+      var file = "./public" + url;
+    }
     renderHTML(file, response, type);
 
 }
@@ -218,7 +257,7 @@ function defineTypes() {
         htm  : undefined,      // non-standard, use .html
         rar  : undefined,      // non-standard, platform dependent, use .zip
         doc  : undefined,      // non-standard, platform dependent, use .pdf
-        docx : undefined,      // non-standard, platform dependent, use .pdf
+        docx : undefined,      // non-standurard, platform dependent, use .pdf
     }
     return types;
 
