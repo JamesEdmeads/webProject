@@ -196,7 +196,22 @@ module.exports = {
             console.log("split", check);
             if(check[1] !== "mp3") {
               result = result +"?"+row.name+"?"+row.place;
-              console.log(result);
+              var ps = db.prepare("select name, place from media inner join mediaAssociate as m on name = audio where m.visual = ?");
+                              console.log("ROW NAME : ", row.name);
+              ps.all(row.name, check0);
+              function check0(err, row) {
+                console.log("IN CHECK0");
+                if(rows === undefined || rows === null) {
+                  execute("fail");                
+                } else {
+                  rows.forEach(function(row) {
+                    console.log("here");
+                    console.log(row.name, row.place);
+                  });
+                }
+              }
+              console.log("RESULT: ",result);
+        
             }
           });
           execute("success"+result);
