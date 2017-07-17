@@ -1,6 +1,8 @@
 "use strict";
 
 //catch insert failure where not null or pk is not unique
+//TODO : check what used and what redundant
+//        association for those already in existence in person and media
 
 var fs = require("fs");
 var file = "DB/data.db"; 
@@ -8,33 +10,35 @@ var exists = fs.existsSync(file);
 var sqlite3 = require("sqlite3").verbose();
 var db = new sqlite3.Database(file);
 
-  function getMediaAssociation(visual, execute)  {
-    if(visual === undefined || visual === null) {
-      execute("isNull");
-    }
-    else{
-      var ps = db.prepare("select audio from mediaAssociate where "
-      +"visual = ?");
-      
-      try{
-        ps.all(visual, check);
-        function check(err, row) {
-          if(row === undefined){
-            execute("noAudio");
-          }
-          else{
-            var result;
-            for(var i = 0; i < row.length; i++) {
-              results = results + "?" + row.audio;
-            }
-            execute("success"+results);
-          }
-        }
-      }catch(err){
-        execute("fail");
-      }
-    }
+function addAssociation(name, associate, type, execute) {
+  console.log("in db function, add association");
+  console.log("type: ",type);
+  console.log("name: ",name);
+  console.log("associate", associate);
+  execute();
+
+}
+
+
+function addMediaAssociation(visual, audio)  {
+
+  if(visual === undefined || visual === null) {
+    console.log("MediaAssociation Failed");
   }
+  try{
+    var ps1 = db.prepare("insert into mediaAssociate "
+    +"(visual, audio) values (?,?)");
+    try{
+      ps1.run(visual, audio);
+      ps1.finalize();
+    }catch(err){
+      console.log("Media Association: failed to add");
+    }
+  }catch(err){
+    console.log("Media Association: database error");
+  }
+}
+  
 
 module.exports = {
 
@@ -148,30 +152,36 @@ module.exports = {
     }
   },
 
-  addMedia: function(name, place, creator, owner, execute)  {
-    console.log(name, place, creator, owner);
-    if(name === undefined || name === null) {
-      console.log("^^^^^^^^^^^^^^^^^^^^^failed");
+  addMedia: function(name, place, creator, owner, associate, execute)  {
+
+    if((name === undefined || name === null) || place === undefined || place === null 
+      || creator === undefined || creator === null || owner === undefined || owner === null) {
       execute("isNull");
     }
+
     else{
-      console.log("!!!!!!!!!!!!!!!!!!!!!!!in media: ", creator, owner);
       var ps0 = db.prepare("select * from media where name = ?");
       try {
         ps0.get(name, check);
         function check(err, row) {
           if(row !== undefined || row === null)  {
-            console.log("alreadyExists");
-            execute();
+            var type = name.split('\.');
+            addAssociation(name, associate, type[1], execute);
           }
           else{
+            place = place.toLowerCase();
+            name = name.toLowerCase();
             var ps1 = db.prepare("insert into media "
             +"(name, place, creator, owner) values (?,?,?,?)");
             try{
               ps1.run(name, place, creator, owner);
               ps1.finalize();
               console.log("success");
-              execute();
+              if(associate !== null) {
+                addMediaAssociation(associate, name);
+                execute();
+              }
+              else {  execute();  }
             }catch(err){
               console.log("fail");
               execute();
@@ -181,41 +191,6 @@ module.exports = {
       }catch(err){
         console.log("fail");
         execute();
-      }
-    }
-  },
-
-
-  addMediaAssociation: function(visual, audio, execute)  {
-
-    if(visual === undefined || visual === null) {
-      execute("isNull");
-    }
-    else{
-    
-      var ps0 = db.prepare("select count(*) from media as mediacount "+
-      "where name = ? or ?");
-
-      try{
-        ps0.get(visual, audio, check);
-        function check(err, row) {
-          if(row.mediacount !== 2) {
-            execute("namesWrong");
-          }
-          else {
-            var ps1 = db.prepare("insert into mediaAssociation "
-            +"(visual, audio) values (?,?)");
-            try{
-              ps1.run(visual, audio);
-              ps1.finalize();
-              execute("success");
-            }catch(err){
-              execute("fail");
-            }
-          }
-        }
-      }catch(err){
-        execute("mediaWrong");
       }
     }
   },
@@ -243,7 +218,6 @@ module.exports = {
 
             var result = "";
             rows.forEach(function(row) {
-
               result = result +"?"+row.name+"?"+row.place+"?"+row.sName+"?"+row.sPlace;
             });
             execute("success"+result);
@@ -283,34 +257,6 @@ module.exports = {
         }
       }catch(err){
         console.log("err in row");
-        execute("fail");
-      }
-    }
-  },
-    
-  getMediaAssociation: function(visual, execute)  {
-    if(visual === undefined || visual === null) {
-      execute("isNull");
-    }
-    else{
-      var ps = db.prepare("select audio from mediaAssociate where "
-      +"visual = ?");
-      
-      try{
-        ps.all(visual, check);
-        function check(err, row) {
-          if(row === undefined){
-            execute("noAudio");
-          }
-          else{
-            var result;
-            for(var i = 0; i < row.length; i++) {
-              results = results + "?" + row.audio;
-            }
-            execute("success"+results);
-          }
-        }
-      }catch(err){
         execute("fail");
       }
     }

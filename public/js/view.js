@@ -4,6 +4,7 @@ var seen = [];
 addEventListener('load', setUp);
 
 function setUp() {
+
   updateForm();
   ownerOptions();
   display();
@@ -14,7 +15,8 @@ function updateForm()  {
 
   var creator = sessionStorage.getItem('id');
   document.getElementById('creator').value = creator; 
-  console.log(sessionStorage.getItem('owner')); 
+  var owner = sessionStorage.getItem('associate');
+  document.getElementById('owner').value = owner;
 
 }
 
@@ -56,10 +58,10 @@ function display()  {
 
       var response = this.responseText;
       if(response === "fail")  {
-        console.log(response); //TODO: change
+        console.log("fail"); //TODO: change
       }
       else if(response === "isNull" || response === "alreadyExists"||response === "fail")
-        console.log("!!!!!!!!!!!!!!!!!!failed");
+        console.log("failed");//TODO: change
       else {
         var results = response.split("?");
         var i;
@@ -67,11 +69,10 @@ function display()  {
 
         for(i = 1; i < results.length; i += 2) {
           var part = results[i].split("\.")[1];
-          console.log("PART: ",part);
-          if(part === "jpg")  { //change to include other types
+          if(part === "jpg")  { //TODO: change to include other types
             seen.push(results[i]);
             if(!done(results[i]))  {
-              var nLine = document.createElement("BR");
+              var nLine = document.createElement("BR"); //TODO : change to seperate functions
               node.appendChild(nLine);
               var image = document.createElement("IMG");
               image.src = results[i+1];
@@ -81,9 +82,10 @@ function display()  {
               addMusicUpload(node);
             }
           }
-          else if(part === "mp3") {
+          else if(part === "mp3") { //TODO: change to include other types
             var name = document.createElement("LABEL");
-            name.innerHTML = results[i].split("\.")[0];
+            var temp = results[i].split("/")[1];
+            name.innerHTML = temp.split("\.")[0];
             node.appendChild(name);
             var music = document.createElement("AUDIO");
             music.controls = "controls";
@@ -100,55 +102,69 @@ function display()  {
 
 function addMusicUpload(node)  {
   var parent = node.lastChild.alt
-  console.log("HERE: ",parent);
   var message = document.createElement("LABEL");
   message.innerHTML = "upload new audio for this picure";
   node.appendChild(message);
   
-
   var form = document.createElement("FORM");
   form.action = "/addMusic";
   form.enctype = "multipart/form-data";
   form.method = "post";
-  
+
+  var names = ["creator", "assocPic", "ownerForm"];
+  var inputs = [];
+
   var input0 = document.createElement("INPUT");
   input0.id = "musicUpload";
   input0.type = "file";
   input0.name = "upload";
-  
-  var input1 = document.createElement("INPUT");
-  input1.className = "hidden";
-  input1.type = "text";
-  input1.id = "creator";
+  inputs.push(input0);
 
-  /*var input2 = document.createElement("INPUT");
-  input2.className = "hidden";
-  input2.type = "text";
-  input2.id = "assocPic";*/
+  for(var i = 1; i < 4; i++) {
 
-  var input3 = document.createElement("INPUT");
-  input3.type = "submit";
-  input3.value = "Upload";
+    var input = document.createElement("INPUT");
+    input.className = "hidden";
+    input.type = "text";
+    input.id = names[i-1];
+    input.name = names[i-1];
+    inputs.push(input);
 
-  form.appendChild(input0);
-  form.appendChild(input1);
-  //form.appendChild(input2);
+  }
 
-  form.appendChild(input3);
+  var input4 = document.createElement("INPUT");
+  input4.type = "submit";
+  input4.value = "Upload";
+  inputs.push(input4);
+
+  for(var i = 0; i < inputs.length; i++)  {
+    form.appendChild(inputs[i]);
+  }
+
   node.appendChild(form);
-  //input2.value = form.previousSibling.previousSibling.alt;
-  input1.value = sessionStorage.getItem('id');
-  console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
- // console.log(document.getElementById('assocPic').value);
-  console.log(document.getElementById('creator').value);
+  updateValues(inputs[1], inputs[2], inputs[3], form);
 
+}
+
+function updateValues(input1, input2, input3, form)  {
+  
+  var value3;
+  input1.value = sessionStorage.getItem('id');
+  input2.value = form.previousSibling.previousSibling.alt;
+  var owner = sessionStorage.getItem('owner');
+
+  if(owner === 'true' || owner === 1) {
+    value3 = sessionStorage.getItem('id');
+    input3.value = value3;
+  } else {
+
+    input3.value = sessionStorage.getItem('associate');
+  }
 
 }
 
 function done(current)  {
   var i;
   for(i = 0; i < seen.length-1; i++)  {
-    console.log("SEEN: ",seen[i]);
     if(seen[i] === current) return true;
   }
   return false;

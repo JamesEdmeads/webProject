@@ -1,9 +1,19 @@
 //adapted from Dr Ian Holyer's server.js
 
+/* TODO:
+  session cookies / tables
+  https
+  http server to re-direct
+  clean up
+  name changes
+  changes for other browers - audio
+*/
+
 var http = require("http");
 var formidable = require("formidable");
 var QS = require("querystring");
 var fs = require("fs");
+var mkdir = require('mkdirp');
 var OK = 200, NotFound = 404, BadType = 415, Error = 500;
 var types, banned, parameters = "";
 var dbFunction = require("./DB/db.js");
@@ -101,14 +111,22 @@ function login(name, pw, response, type)  {
 
 }
 
-function addMusic(request, response, type) { //TODO:come back to this - need to associate and get pic name from form
-  var name0, path, owner, creator;
+function addMusic(request, response, type) { 
+    //TODO: cant load same file for two different pics: so check in db - if already exists then insert into media associate
+    var name0, path, owner, creator, associate;
 
     var form = new formidable.IncomingForm();
-    form.parse(request);
+
+    form.parse(request, function(err, fields, files){
+      var oldpath = files.upload.path;
+      var newpath = './files/'+owner+'/' + files.upload.name;
+      fs.rename(oldpath, newpath, function (err) {
+        if (err) console.log(err); //TODO:change
+      });
+     });
 
     form.on('fileBegin', function (name, file){  
-      path = "files/"+file.name;
+      path = file.name;
     });
 
     form.on('file', function(name, file)  { 
@@ -116,11 +134,21 @@ function addMusic(request, response, type) { //TODO:come back to this - need to 
     });
 
     form.on('field', function(name, value) {
-      creator = value;
+      if(name === "creator")  {  
+        creator = value;
+      }
+      else if(name === "assocPic") {
+        associate = value;
+      }
+      else {
+        owner = value;
+      }
     });
 
     form.on('end', function(){
-      //dbFunction.addMedia(name0, path, creator, creator, execute ); //tochange
+      var path0 = './files/'+owner+'/'+path;
+      var name1 = owner+'/'+name0;
+      dbFunction.addMedia(name1, path0, creator, owner, associate, execute ); 
       function execute() {
         renderHTML("./public/view.html", response, type);
       }
@@ -130,20 +158,20 @@ function addMusic(request, response, type) { //TODO:come back to this - need to 
 }
 
 function addPic(request, response, type)  {
-
+  //TODO: get owner when pics added
   var name0, path, owner, creator;
 
     var form = new formidable.IncomingForm();
     form.parse(request, function(err, fields, files){
       var oldpath = files.upload.path;
-      var newpath = './files/' + files.upload.name;
+      var newpath = './files/'+owner+'/' + files.upload.name;
       fs.rename(oldpath, newpath, function (err) {
         if (err) console.log(err); //TODO:change
       });
      });
 
     form.on('fileBegin', function (name, file){
-      path = "./files/"+file.name;
+      path = file.name;
     });
 
     form.on('file', function(name, file)  { 
@@ -152,11 +180,16 @@ function addPic(request, response, type)  {
     });
 
     form.on('field', function(name, value) {
-      creator = value;
+      if(name === 'creator') {  creator = value;  }
+      else  { owner = value;  }
     });
 
     form.on('end', function(){   
-      dbFunction.addMedia(name0, path, creator, creator, execute ); 
+      var path0 = './files/'+owner+'/'+path; 
+      var name1 = owner+'/'+name0;
+      console.log("HERE: ", owner, " file name :", name1);
+
+      dbFunction.addMedia(name1, path0, creator, owner, null,  execute ); 
 
       function execute() {
         renderHTML("./public/view.html", response, type);
@@ -166,6 +199,13 @@ function addPic(request, response, type)  {
 }
 
 function newUser(name, pw, owner, response, type)  {
+  
+    if(owner === "true") {
+      mkdir('./files/'+name, function (err) {
+        if(err) console.log(err)
+        else console.log("done"); //TODO: change
+      });
+    }
 
     var user = dbFunction.addUser(name, pw, owner, execute);
 

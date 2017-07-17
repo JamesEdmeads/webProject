@@ -1,0 +1,20 @@
+go through each js file and clean up
+
+db - addassociation
+
+server -
+  session cookies / tables
+  https
+  http server to re-direct
+  clean up
+  name changes
+  changes for other browers - audio
+
+css - all
+
+comments
+
+add a readme
+
+
+

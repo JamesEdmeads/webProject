@@ -12,7 +12,6 @@ function send()  {
        if(this.readyState === 4 && this.status === 200) {
         var response = this.responseText;
         var response0 = response.split("?");
-          console.log(response0);
           switch(response0[0]) {
             case "success": success(response);break;
             case "fail": 
@@ -27,9 +26,7 @@ function send()  {
 
 function success(list)  {
   var owner = sessionStorage.getItem('owner');
-  console.log(owner);
   if(owner === "true") {
-    console.log("here");
     window.location.href = "view.html";
   } else {
 
@@ -62,7 +59,7 @@ function fail(error)  {
 
   var reply = document.getElementById('fail');
   if(error === "noAssociate")
-    reply.innerHTML = "no one connected to your account. Plase add connection";
+    reply.innerHTML = "no one is connected to your account. Plase add connection";
   else if(error === "fail")
     reply.innerHTML = "unable to get connection, please try again";
   else if (error === "isNull") 
@@ -81,7 +78,7 @@ async function goBack(reply) {
 }
   
 
-function viewStory() {
+function viewStory() { //TODO: sort out
 
   console.log("todo");
 
@@ -105,7 +102,6 @@ function setUp(){
   var owner = sessionStorage.getItem('owner');
 
   if(owner === "false") {
-    console.log("here");
     add0.style.display = "block";
   }
   else {
