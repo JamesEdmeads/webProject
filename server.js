@@ -1,15 +1,5 @@
 //adapted from Dr Ian Holyer's server.js
 
-/*to consider: 
-  https
-  security 
-  white box 
-  security browser info - no strings etc
-  banning specific attempts ie .. // etc
-  data base
-  
-  
-*/
 var http = require("http");
 var formidable = require("formidable");
 var QS = require("querystring");
@@ -37,10 +27,8 @@ function startHTTP(port) {
 // Serve a request by delivering a file.
 function handleHTTP(request, response) {
 
-    console.log("URL = ",request.url);
     var url = request.url.toLowerCase();
     var requestURL = url.split("?");
-    console.log("Request URL = ",requestURL);
 
     if (url.endsWith("/")) url = url + "index.html";
     if(reject(url)) return fail(response, NotFound, "URL access refused");
@@ -50,24 +38,36 @@ function handleHTTP(request, response) {
     switch (requestURL[0])  {
       case "/newuser" : newUser(requestURL[1], requestURL[2], requestURL[3], response, type); break;
       case "/login" : login(requestURL[1], requestURL[2], response, type); break;
-      case "/upload" : check(request, response, type); break;
       case "/associate" : associate(requestURL[1], requestURL[2], response, type); break;
-      case "/display" : display(request, response, type); break;
+      case "/display" : display(requestURL[1], response, type); break;
+      case "/addpic" : addPic(request, response, type); break;
+      case "/addmusic" : addMusic(request, response, type); break;
+      case "/relations" : getRelations(requestURL[1], response, type); break;
       default: defaultReply(response, type, url);
 
     }
 
     //if (type == null) return fail(response, BadType, "File type unsupported"); //TODO - add all types we allow
-    //var file = "./public" + url;
-    //fs.readFile(file, ready);
-    //function ready(err, content) { deliver(response, type, err, content); }
 
 }
 
-function display(request, response, type)  {
-  dbFunction.getMedia("owner", execute);
+function getRelations(id, response, type)  {
+
+  dbFunction.getPersonAssociation(id, execute);
+
   function execute(result){
-      console.log("getmedia:", result);
+    var textTypeHeader = { "Content-Type": "text/plain" };
+    response.writeHead(200, textTypeHeader);
+    response.write(result);
+    response.end();
+  }
+}
+
+function display(owner, response, type)  {
+
+  dbFunction.getMedia(owner, execute);
+
+  function execute(result){
       var textTypeHeader = { "Content-Type": "text/plain" };
       response.writeHead(200, textTypeHeader);
       response.write(result);
@@ -77,7 +77,9 @@ function display(request, response, type)  {
 }
 
 function associate(name, owner, response, type)  {
+
     dbFunction.associate(name, owner, execute);
+
     function execute(result) {
       var textTypeHeader = { "Content-Type": "text/plain" };
       response.writeHead(200, textTypeHeader);
@@ -89,6 +91,7 @@ function associate(name, owner, response, type)  {
 function login(name, pw, response, type)  {
 
   var user = dbFunction.checkUser(name, pw, execute);
+
     function execute(result) {
       var textTypeHeader = { "Content-Type": "text/plain" };
       response.writeHead(200, textTypeHeader);
@@ -98,51 +101,81 @@ function login(name, pw, response, type)  {
 
 }
 
-function check(request, response, type) {
-  //need to change file path to userid
+function addMusic(request, response, type) { //TODO:come back to this - need to associate and get pic name from form
   var name0, path, owner, creator;
 
     var form = new formidable.IncomingForm();
     form.parse(request);
 
-    form.on('fileBegin', function (name, file){
-      
+    form.on('fileBegin', function (name, file){  
       path = "files/"+file.name;
-      console.log("path: ", path);
     });
 
     form.on('file', function(name, file)  { 
       name0 = file.name;
-      console.log("name: ", name0);
     });
 
     form.on('field', function(name, value) {
-      console.log("creator : ", value);
       creator = value;
     });
 
     form.on('end', function(){
-      console.log("we get here");
-      console.log("name: ",name0, "path:", path, "creator:", creator);
-      dbFunction.addMedia(name0, path, creator, creator, execute ); //tochange
+      //dbFunction.addMedia(name0, path, creator, creator, execute ); //tochange
       function execute() {
-        console.log("executing");
-        renderHTML("./public/update.html", response, type);
+        renderHTML("./public/view.html", response, type);
       }
     });
-  
+
+
+}
+
+function addPic(request, response, type)  {
+
+  var name0, path, owner, creator;
+
+    var form = new formidable.IncomingForm();
+    form.parse(request, function(err, fields, files){
+      var oldpath = files.upload.path;
+      var newpath = './files/' + files.upload.name;
+      fs.rename(oldpath, newpath, function (err) {
+        if (err) console.log(err); //TODO:change
+      });
+     });
+
+    form.on('fileBegin', function (name, file){
+      path = "./files/"+file.name;
+    });
+
+    form.on('file', function(name, file)  { 
+      name0 = file.name;
+
+    });
+
+    form.on('field', function(name, value) {
+      creator = value;
+    });
+
+    form.on('end', function(){   
+      dbFunction.addMedia(name0, path, creator, creator, execute ); 
+
+      function execute() {
+        renderHTML("./public/view.html", response, type);
+      }
+    });
 
 }
 
 function newUser(name, pw, owner, response, type)  {
-    console.log("here new user");
+
     var user = dbFunction.addUser(name, pw, owner, execute);
+
     function execute(result) {
       var textTypeHeader = { "Content-Type": "text/plain" };
       response.writeHead(200, textTypeHeader);
       response.write(result);
       response.end();
     }
+
 }
 
 
@@ -153,9 +186,8 @@ function newUser(name, pw, owner, response, type)  {
     
 
 // Loads the website if it is allowed
-function defaultReply(response, type, url){
+function defaultReply(response, type, url){ //TODO:this will need to change to be secure
 
-    //this will need to change to be secure
     if (type === null) return fail(response, BadType, "File type unsupported");
     var place = url.lastIndexOf(".");
     var bit = url.substring(place);

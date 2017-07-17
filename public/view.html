@@ -3,12 +3,25 @@
 <head>
   <title>Shared Memories</title>
   <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1" />
-  <link href="view.css" media="screen" rel = "stylesheet" type="text/css"></link>
-  <script src = "view.js"></script>
+  <link href="css/view.css" media="screen" rel = "stylesheet" type="text/css"></link>
+  <script src = "js/view.js"></script>
 </head>
 <body>
 
   <div id = "image" src = ""></div>
+
+  <section id = "addMore">
+    <p>Add new images</p>
+      <form action = "/addPic" enctype="multipart/form-data" method = "post">
+      <input id = "picUpload" type = "file" name = "upload" multiple></input>
+      <input class = "hidden" type = "text" value = "" name = "owner" id = "creator"></input>
+      <input type = "submit" value="Upload"></input>
+    </form>
+  </section>
+
+  <section class = "hidden" id = "viewButton">
+    <input id = "view" type = "button" value = "view story"></input>
+  </section>
 
 </body>
 </html>
