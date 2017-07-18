@@ -7,4 +7,68 @@
   display: none;
 }
 
+h1 {
+  position: absolute;
+  left : 33%;
+  top : 30%;
+
+}
+
+#main {
+  position: absolute;
+  left: 40%;
+  top: 45%;
+  
+}
+
+.loginExist {
+  position: relative;
+  left: -25%;
+  top: 40px;
+
+
+}
+
+.loginForm {
+  position: relative;
+  left: -30%;
+  top: 40px;
+
+}
+
+#login {
+  position: relative;
+  left: -10%;
+}
+
+#newUser{
+ position: relative;
+  left: 10%;
+}
+
+#tick {
+  position: relative;
+  top: 20px;
+  left: 37.5%;
+}
+
+#formSend{
+  position: relative;
+  top : 70px;
+  left: 30%;
+
+}
+
+#send{
+  position: relative;
+  top: 40px;
+  left:35%;
+}
+
+input[type=checkbox]{
+  transform: scale(1.5);
+}
+
+
+
 

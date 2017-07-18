@@ -1,3 +1,9 @@
+body {
+  
+  font-size: 20px; 
+
+}
+
 .buttons  {
 
   font-size: 20px;
@@ -10,4 +16,15 @@
 .buttons:hover,
 .buttons:focus {
   cursor: pointer;
+}
+
+input{
+  padding:12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+
+}
+
+input[type=text], input[type=password]{
+  font-size: 20px;
 }

@@ -1,10 +1,70 @@
+body {
+  overflow-x: auto;
+
+}
+
 .image {
   left : 150px;
-  height : 150px;
-  width : 150px;
+  height : 250px;
+  width : 250px;
 
 }
 
 .hidden {
   display : none;
 }
+
+.buttons  {
+
+  font-size:16px;
+  border-radius: 12px;
+  text-align: center;
+  padding: 12px 24px;
+
+}
+
+.audio {
+  position: relative;
+  left: 275px;
+  top : -220px;
+
+}
+
+.audioUploadTag{
+  position: relative;
+  left: 25px;
+  top: -230px;
+
+}
+
+.musicForm {
+  position: relative;
+  left: 250px;
+  top: -245px;
+
+}
+
+#addMore {
+  position: relative;
+  top: -50px;
+}
+
+#picUpload {
+  position: relative;
+  left: -20px;
+
+}
+
+#audioName{
+  position: relative;
+  top: -230px;
+
+}
+
+#viewButton {
+  position: relative;
+  left:45%;
+
+}
+
+

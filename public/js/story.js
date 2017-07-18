@@ -43,8 +43,13 @@ function update()  {
 function display()  {
 
   var image = document.getElementById('image');
+  var w = window.innerWidth;
+  var h = window.innerHeight;
 
   image.src = media[current];
+  image.width = w-200;
+  image.height = h;
+  console.log(w, h);
 
   nextSong();
 

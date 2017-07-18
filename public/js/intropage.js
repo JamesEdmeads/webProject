@@ -99,6 +99,7 @@ function newOwner()  {
   var cont = document.createElement("INPUT");
   cont.value = "continue";
   cont.type = "button";
+  cont.id = "contId";
   cont.className = "buttons";
   cont.addEventListener('click', go);
   div.appendChild(cont);

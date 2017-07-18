@@ -3,3 +3,23 @@
   display : none;
 
 }
+
+.all {
+  position: absolute;
+  left:40%;
+  top: 35%;
+
+}
+
+#view {
+  position: relative;
+  top: 40px;
+  left: 7%;
+}
+
+#add {
+  position: relative;
+  top: 40px;
+  left: -7%;
+
+}

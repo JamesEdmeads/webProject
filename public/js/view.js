@@ -123,12 +123,15 @@ function appendMusic(node, next, song)  {
   var name = document.createElement("LABEL");
   var temp = song.split("/")[1];
   name.innerHTML = temp.split("\.")[0];
+  name.className = "audio";
+  name.id = "audioName";
   node.appendChild(name);
   var music = document.createElement("AUDIO");
   music.controls = "controls";
   music.controlsList = "nodownload";
   music.src = next;
   music.alt = song;
+  music.className = "audio";
   node.appendChild(music);
 
 }
@@ -137,13 +140,15 @@ function appendMusic(node, next, song)  {
 function addMusicUpload(node)  {
   var parent = node.lastChild.alt
   var message = document.createElement("LABEL");
-  message.innerHTML = "upload new audio for this picure";
+  message.innerHTML = "upload new audio for this picure:";
+  message.className = "audioUploadTag"
   node.appendChild(message);
   
   var form = document.createElement("FORM");
   form.action = "/addMusic";
   form.enctype = "multipart/form-data";
   form.method = "post";
+  form.className = "musicForm";
 
   var names = ["creator", "assocPic", "ownerForm"];
   var inputs = [];

@@ -11,22 +11,26 @@
 </head>
 <body>
   <h1>Welcome to Shared Memories</h1>
+  <section id = "main">
+    <button id = "login" class = "buttons"> Login</button>
+    <button id = "newUser" class = "buttons"> New User</button>
 
-  <button id = "login" class = "buttons">Login</button>
-  <button id = "newUser" class = "buttons">New User</button>
+    <section class = loginForm id = "newUser0">
+      <input id = "name" type = "text" name = "username"> username</input>
+      <input id = "pw" type = "password" name = "password" > password</input>
+      <br>
+      <section id = "tick"> 
+        <input id = "own" type = "checkbox" name = "owner">  own story</input>
+      </section>
+      <button id = "formSend" class = "buttons">Create Account</button>
+    </section>
 
-  <section class = loginForm id = "newUser0">
-    <input id = "name" type = "text" name = "username">username</input>
-    <input id = "pw" type = "password" name = "password">password</input>
-    <input id = "own" type = "checkbox" name = "owner">own story</input>
-    <button id = "formSend" class = "buttons">Create Account</button>
+    <section class = loginExist id = "existUser">
+      <input id = "eUser" type = "text" name = "eUsername">username</input>
+      <input id = "ePw" type = "password" name = "ePassword">password</input>
+      <button id = "send" class = "buttons">Login</button>
+    </section>
+    <p id = "response"></p>
   </section>
-
-  <section class = loginExist id = "existUser">
-    <input id = "eUser" type = "text" name = "eUsername">username</input>
-    <input id = "ePw" type = "password" name = "ePassword">password</input>
-    <button id = "send" class = "buttons">Login</button>
-  </section>
-  <p id = "response"></p>
 </body>
 </html>
