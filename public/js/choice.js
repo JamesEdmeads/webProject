@@ -1,5 +1,6 @@
 addEventListener('load', setUp);
 
+//sends message to server to get associations for user
 function send()  {
 
     var id = sessionStorage.getItem('id');
@@ -24,12 +25,14 @@ function send()  {
 
 }
 
+//if owner re-directs to view of story 
+//if not owner displays the stories user is allowed to contribute to
 function success(list)  {
+
   var owner = sessionStorage.getItem('owner');
   if(owner === "true") {
     window.location.href = "view.html";
   } else {
-
     var response = list.split("?");
     var res = document.getElementById('fail');
     res.innerHTML = "Select Person's story to update"
@@ -47,19 +50,21 @@ function success(list)  {
 
 }
 
+//adds associate name to local storage then re-directs
 function add0()  {
   var choice = this.textContext || this.innerText;
   sessionStorage.setItem('associate', choice);
   window.location.href = "view.html";
 
-
 }
 
+//handles fails
 function fail(error)  {
 
   var reply = document.getElementById('fail');
   if(error === "noAssociate")
-    reply.innerHTML = "no one is connected to your account. Plase add connection";
+    reply.innerHTML = "no one is connected to your account."+
+    " Please add connection";
   else if(error === "fail")
     reply.innerHTML = "unable to get connection, please try again";
   else if (error === "isNull") 
@@ -67,6 +72,8 @@ function fail(error)  {
 
 }
 
+//pauses for a second to display message then re-directs to 
+//the log in page
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -78,19 +85,21 @@ async function goBack(reply) {
 }
   
 
-function viewStory() { //TODO: sort out
+function viewStory() { 
 
-  console.log("todo");
+  window.location.href = "story.html";
 
 }
 
+//re-directs to add to a story
 function add() {
 
   window.location.href = "intropage.html";
 
 }
 
-
+//initial set up function. Determines whether user is the owner
+//of the story or a contributor and changes the options accordingly
 function setUp(){
 
   document.getElementById("update").addEventListener('click', send);

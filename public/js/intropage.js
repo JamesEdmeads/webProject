@@ -2,6 +2,8 @@
 
 addEventListener('load', setUp);
 
+//sends request to server to associate user with an account
+//directs responses to functions to deal with 
 function associate() {
 
   var store = sessionStorage.getItem('id');
@@ -29,6 +31,7 @@ function associate() {
 
 }
 
+//deals with all failed associations
 function fail(code)  {
   var show = document.getElementById('fail');
   var reply;
@@ -37,7 +40,6 @@ function fail(code)  {
       reply = "unknown user: please re-enter"; break;
     case "alreadyExists": 
       reply = "already linked to this person's story. Click continue";
-      console.log("already exists");
       addContinue(); 
       break;
     case "fail": 
@@ -53,31 +55,37 @@ function fail(code)  {
 
 }
 
+//creates continue button to add when user tries to add an
+//association to an account they are already connected to
 function addContinue()  {
-  console.log("in add continue");
+
   var button = document.createElement("INPUT");
   button.type = "button";
   button.value = "continue";
+  button.className = "buttons";
   button.addEventListener('click', addShow);
-  console.log(button);
   var cont = document.getElementById('cont');
   cont.appendChild(button);
 
 }
 
+//gets values from page to re-direct user to their story page
 function addShow() {
-  console.log("here");
+
   var userOwner = document.getElementById('ownerName').value;
   showStory(userOwner);
 
 }
 
+//sets session storage for the associate then re-directs to story page
 function showStory(name)  {
-  console.log("in show Story");
+
   sessionStorage.setItem('associate', name);
   window.location.href = "view.html";
+
 }
 
+//for new owners, adds text and a continue button
 function newOwner()  {
 
   var owner = sessionStorage.getItem('id');
@@ -91,20 +99,23 @@ function newOwner()  {
   var cont = document.createElement("INPUT");
   cont.value = "continue";
   cont.type = "button";
+  cont.className = "buttons";
   cont.addEventListener('click', go);
   div.appendChild(cont);
 
 }
 
+//re-directs to the story page
 function go() {
 
   window.location.href = "view.html";
 
 }
 
+//changes options depending on whether user is the story owner or not
 function setUp()  {
+
   var owner = sessionStorage.getItem('owner');
-  console.log(owner);
 
   document.getElementById('oNameGo').addEventListener('click', associate);
   if(owner==="false") {

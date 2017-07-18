@@ -120,6 +120,7 @@ function addMusic(request, response, type) {
     form.parse(request, function(err, fields, files){
       var oldpath = files.upload.path;
       var newpath = './files/'+owner+'/' + files.upload.name;
+      console.log("NEWPATH: ", newpath);
       fs.rename(oldpath, newpath, function (err) {
         if (err) console.log(err); //TODO:change
       });
@@ -165,6 +166,7 @@ function addPic(request, response, type)  {
     form.parse(request, function(err, fields, files){
       var oldpath = files.upload.path;
       var newpath = './files/'+owner+'/' + files.upload.name;
+  console.log("NEWPATH: ", newpath);
       fs.rename(oldpath, newpath, function (err) {
         if (err) console.log(err); //TODO:change
       });

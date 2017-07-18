@@ -1,6 +1,4 @@
-go through each js file and clean up
-
-db - addassociation
+actual view page
 
 server -
   session cookies / tables
@@ -11,8 +9,6 @@ server -
   changes for other browers - audio
 
 css - all
-
-comments
 
 add a readme
 

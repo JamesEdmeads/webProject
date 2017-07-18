@@ -1,47 +1,68 @@
 "use strict";
 
-//catch insert failure where not null or pk is not unique
-//TODO : check what used and what redundant
-//        association for those already in existence in person and media
-
 var fs = require("fs");
 var file = "DB/data.db"; 
 var exists = fs.existsSync(file); 
 var sqlite3 = require("sqlite3").verbose();
 var db = new sqlite3.Database(file);
 
+//Stops association of picture with a picture then adds
+//media association
 function addAssociation(name, associate, type, execute) {
-  console.log("in db function, add association");
-  console.log("type: ",type);
-  console.log("name: ",name);
-  console.log("associate", associate);
-  execute();
+
+  if(associate === undefined || associate === null) {
+    execute();
+  } else {
+    addMediaAssociation(associate, name);
+    execute();
+  }
 
 }
 
-
+//adds media association only between an audio file and picture file
 function addMediaAssociation(visual, audio)  {
+
+  var type = audio.split('\.');
 
   if(visual === undefined || visual === null) {
     console.log("MediaAssociation Failed");
   }
-  try{
-    var ps1 = db.prepare("insert into mediaAssociate "
-    +"(visual, audio) values (?,?)");
-    try{
-      ps1.run(visual, audio);
-      ps1.finalize();
-    }catch(err){
-      console.log("Media Association: failed to add");
+
+  else if(type[1] === 'jpg' || type[1] === 'png' || type[1] === 'jpeg') {
+    console.log("Media Association: cannot add pic to pic");
+  } else {
+    var ps0 = db.prepare("select * from mediaAssociate where visual = ? and audio = ?");
+    try {
+      ps0.get(visual, audio, check);
+      ps0.finalize();
+      function check(err, row) {
+        if(row !== undefined) {
+          console.log("Media Association: failed already exists");
+        } else {
+          try{
+            var ps1 = db.prepare("insert into mediaAssociate "
+            +"(visual, audio) values (?,?)");
+            try{
+              ps1.run(visual, audio);
+              ps1.finalize();
+            }catch(err){
+              console.log("Media Association: failed to add");
+            }
+          }catch(err){
+            console.log("Media Association: database error");
+          }
+        }
+      }
+    } catch(err) {
+      console.log("Media Association: database error");
     }
-  }catch(err){
-    console.log("Media Association: database error");
   }
 }
   
-
+//functions used by the server
 module.exports = {
 
+  //adds a new user to the database
   addUser: function(uName, pWord, owner, execute)  {
 
     if(uName === undefined || uName === null) {
@@ -77,6 +98,8 @@ module.exports = {
 
   },
 
+  //checks whether a user exists and whether correct password
+  //has been entered
   checkUser: function (userName, pWord, execute)  {
 
     if(userName === undefined || userName === null) {
@@ -104,6 +127,8 @@ module.exports = {
 
   },
 
+  //checks user exists, media not already associated then
+  //adds association
   associate: function(userName, owner, execute) {
     if(owner === undefined || owner === null) {
       execute("isNull");
@@ -152,10 +177,13 @@ module.exports = {
     }
   },
 
+  //checks whether media already exists and if not adds to media table
+  //checks then re-directs to media association
   addMedia: function(name, place, creator, owner, associate, execute)  {
 
-    if((name === undefined || name === null) || place === undefined || place === null 
-      || creator === undefined || creator === null || owner === undefined || owner === null) {
+    if((name === undefined || name === null) || place === undefined || 
+      place === null || creator === undefined || creator === null || 
+      owner === undefined || owner === null) {
       execute("isNull");
     }
 
@@ -176,25 +204,23 @@ module.exports = {
             try{
               ps1.run(name, place, creator, owner);
               ps1.finalize();
-              console.log("success");
               if(associate !== null) {
                 addMediaAssociation(associate, name);
                 execute();
               }
               else {  execute();  }
             }catch(err){
-              console.log("fail");
               execute();
             }
           }
         }
       }catch(err){
-        console.log("fail");
         execute();
       }
     }
   },
 
+  //returns media with each visual file followed by it's associated audio files
   getMedia: function(name, execute)  {
     if(name === undefined || name === null) {
       execute("isNull");
@@ -206,8 +232,8 @@ module.exports = {
       "(select * from media inner join mediaAssociate on name = audio)) "+
       "where name = sVisual and owner = ? "+
       "union all "+
-      "select name, place, null as sName , null as sPlace from media where owner = ? and name "+
-      " like ('%.jpg') order by name asc");
+      "select name, place, null as sName , null as sPlace from media where owner = ? "+
+      "and name like ('%.jpg') or name like ('%.jpeg') or name like ('%.png') order by name asc");
 
       try {
         ps.all(name, name, check);
@@ -229,10 +255,11 @@ module.exports = {
     }
   },
 
+  //checks whether there is an association and, if so, returns
+  //this to the browser
   getPersonAssociation: function(name, execute)  {
 
     if(name === undefined || name === null) {
-      console.log("is Null");
       execute("isNull");
     }
     else{
@@ -244,19 +271,16 @@ module.exports = {
         ps.all(name, check);
         function check(err, rows) {
           if(rows === undefined || rows === null) {
-            console.log("no associate");
             execute("noAssociate");
           } else {
             var result = "";
             rows.forEach(function(row) {
               result = result + "?"+row.owner;
-              console.log("HERE  :",result);
             });
             execute("success?"+result);
           }
         }
       }catch(err){
-        console.log("err in row");
         execute("fail");
       }
     }

@@ -1,0 +1,13 @@
+.buttons  {
+
+  font-size: 20px;
+  border-radius: 16px;
+  text-align: center;
+  padding: 16px 32px;
+
+}
+
+.buttons:hover,
+.buttons:focus {
+  cursor: pointer;
+}

@@ -3,6 +3,7 @@ var seen = [];
 
 addEventListener('load', setUp);
 
+//calls functions to setup the page correctly
 function setUp() {
 
   updateForm();
@@ -11,6 +12,7 @@ function setUp() {
 
 }
 
+//puts values into hidden forms
 function updateForm()  {
 
   var creator = sessionStorage.getItem('id');
@@ -20,6 +22,7 @@ function updateForm()  {
 
 }
 
+//if owner display button for them to continue to view story page
 function ownerOptions()  {
 
   var owner = sessionStorage.getItem('owner');
@@ -31,13 +34,18 @@ function ownerOptions()  {
 
 }
 
+//re-directs to the view story page
 function view()  {
   //re-direct to view button
-  console.log("TODO: re-direct");
+  window.location.href = "story.html";
 
 }
 
-
+//sends request to server to get the media associated with 
+//the account
+//on response - sends to functions to dynamically create 
+//image and audio html to display correctly the items returned
+//checks what has already been displayed to avoid duplication
 function display()  {
 
   var owner = sessionStorage.getItem('owner');
@@ -57,11 +65,9 @@ function display()  {
     if(this.readyState === 4 && this.status === 200) {
 
       var response = this.responseText;
-      if(response === "fail")  {
-        console.log("fail"); //TODO: change
+      if(response === "fail" || response === "isNull" || response === "alreadyExists"||response === "fail") {
+          fail();
       }
-      else if(response === "isNull" || response === "alreadyExists"||response === "fail")
-        console.log("failed");//TODO: change
       else {
         var results = response.split("?");
         var i;
@@ -69,37 +75,65 @@ function display()  {
 
         for(i = 1; i < results.length; i += 2) {
           var part = results[i].split("\.")[1];
-          if(part === "jpg")  { //TODO: change to include other types
+          if(part === "jpg" || part === "png" || part === "jpeg")  { 
             seen.push(results[i]);
             if(!done(results[i]))  {
-              var nLine = document.createElement("BR"); //TODO : change to seperate functions
-              node.appendChild(nLine);
-              var image = document.createElement("IMG");
-              image.src = results[i+1];
-              image.alt = results[i];
-              image.className = "image";
-              node.appendChild(image);
-              addMusicUpload(node);
+              appendImage(node, results[i+1], results[i]);
             }
           }
-          else if(part === "mp3") { //TODO: change to include other types
-            var name = document.createElement("LABEL");
-            var temp = results[i].split("/")[1];
-            name.innerHTML = temp.split("\.")[0];
-            node.appendChild(name);
-            var music = document.createElement("AUDIO");
-            music.controls = "controls";
-            music.controlsList = "nodownload";
-            music.src = results[i+1];
-            music.alt = results[i];
-            node.appendChild(music);
+          else if(part === "mp3" || part === 'aac') { 
+            appendMusic(node, results[i+1], results[i])
           }
-        } 
-        
+        }   
       }
     }
   }
+}
 
+//pauses for a second to display message then re-directs to 
+//the log in page
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function fail() {
+  reply.innerHTML = "Error, returning to log in";
+  await sleep(1000);
+  window.location.href = "index.html";
+}
+  
+
+//creates image HTML for each image
+function appendImage(node, next, current)  {
+
+  var nLine = document.createElement("BR"); 
+  node.appendChild(nLine);
+  var image = document.createElement("IMG");
+  image.src = next;
+  image.alt = current;
+  image.className = "image";
+  node.appendChild(image);
+  addMusicUpload(node);
+
+}
+
+//creates music HTML for each song associated with the image
+function appendMusic(node, next, song)  {
+
+  var name = document.createElement("LABEL");
+  var temp = song.split("/")[1];
+  name.innerHTML = temp.split("\.")[0];
+  node.appendChild(name);
+  var music = document.createElement("AUDIO");
+  music.controls = "controls";
+  music.controlsList = "nodownload";
+  music.src = next;
+  music.alt = song;
+  node.appendChild(music);
+
+}
+
+//creates form HTML to add new music to each image file
 function addMusicUpload(node)  {
   var parent = node.lastChild.alt
   var message = document.createElement("LABEL");
@@ -118,6 +152,7 @@ function addMusicUpload(node)  {
   input0.id = "musicUpload";
   input0.type = "file";
   input0.name = "upload";
+  input0.className = "buttons";
   inputs.push(input0);
 
   for(var i = 1; i < 4; i++) {
@@ -134,6 +169,7 @@ function addMusicUpload(node)  {
   var input4 = document.createElement("INPUT");
   input4.type = "submit";
   input4.value = "Upload";
+  input4.className = "buttons";
   inputs.push(input4);
 
   for(var i = 0; i < inputs.length; i++)  {
@@ -145,6 +181,8 @@ function addMusicUpload(node)  {
 
 }
 
+//updates form created above for the music uploads to have the 
+//correct values
 function updateValues(input1, input2, input3, form)  {
   
   var value3;
@@ -162,6 +200,7 @@ function updateValues(input1, input2, input3, form)  {
 
 }
 
+//checks whether images have already been seen so they are not displayed
 function done(current)  {
   var i;
   for(i = 0; i < seen.length-1; i++)  {
@@ -172,4 +211,4 @@ function done(current)  {
 }
 
 
-}
+
