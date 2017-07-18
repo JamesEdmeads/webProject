@@ -2,19 +2,22 @@ addEventListener('load', setUp);
 
 var media = [];
 var seen = [];
+var nextAudio = 1;
 var current = 0;
 var last = 0;
+var sound;
 
 function setUp() {
-  console.log("here");
+
   var nextImage = document.getElementById('nextImage');
-  var nextSong = document.getElementById('nextSong');
+  var nextSong = document.getElementById('nextSound');
 
   nextImage.addEventListener('click', nextPic);
-
+  nextSong.addEventListener('click', check);
   loadMedia();
 
 }
+
 
 function fail() {
   
@@ -43,6 +46,8 @@ function display()  {
 
   image.src = media[current];
 
+  nextSong();
+
 }
 
 function nextPic() {
@@ -50,6 +55,44 @@ function nextPic() {
   current = getNext();
 
   display();
+
+}
+
+function check()  {
+
+  nextSong();
+  
+}
+
+function nextSong() {
+  
+  sound = document.getElementById('sound');
+  var song = getNextSong();
+  var part = media[song].split("\.")[2];
+
+  if(part === "mp3" || part === "aac") {  
+    sound.src = media[song];
+    sound.play();
+  }
+  else  {
+    sound.src = "";
+  }
+
+}
+
+//when at end this needs to return to the first associated music
+//when sound finishes needs to play next
+function getNextSong()  {
+  var part;
+  for(var i = current+nextAudio; i < media.length; i++) {
+    part = media[i].split("\.")[2];
+    if(part === "mp3" || part === "aac") {
+      nextAudio++;
+      return i;
+    }
+  }
+  nextAudio = 1;
+  return current+1;
 
 }
 

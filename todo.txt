@@ -1,4 +1,4 @@
-actual view page
+actual view page - glitch - plays first one twice
 
 server -
   session cookies / tables
