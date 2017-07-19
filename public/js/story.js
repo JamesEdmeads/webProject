@@ -11,10 +11,19 @@ function setUp() {
 
   var nextImage = document.getElementById('nextImage');
   var nextSong = document.getElementById('nextSound');
+  var mute = document.getElementById('mute');
+
+  mute.addEventListener('click', muteSong);
 
   nextImage.addEventListener('click', nextPic);
   nextSong.addEventListener('click', check);
   loadMedia();
+
+}
+
+function muteSong() {
+
+  sound.pause();
 
 }
 
@@ -58,7 +67,7 @@ function display()  {
 function nextPic() {
 
   current = getNext();
-
+  nextAudio = 1;
   display();
 
 }
@@ -75,7 +84,7 @@ function nextSong() {
   var song = getNextSong();
   var part = media[song].split("\.")[2];
 
-  if(part === "mp3" || part === "aac") {  
+  if(part === "mp3" || part === "aac" || part === "ogg" || part === "wav") {  
     sound.src = media[song];
     sound.play();
   }
@@ -91,7 +100,7 @@ function getNextSong()  {
   var part;
   for(var i = current+nextAudio; i < media.length; i++) {
     part = media[i].split("\.")[2];
-    if(part === "mp3" || part === "aac") {
+    if(part === "mp3" || part === "aac" || part === "ogg" || part === "wav") {
       nextAudio++;
       return i;
     }

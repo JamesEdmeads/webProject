@@ -9,5 +9,25 @@
   position: absolute;
   right: 15px;
   top: 300px;
+  background-color: blue;
 
 }
+
+#mute {
+  position: absolute;
+  right: 3px;
+  top: 550px;
+  background-color: orange;
+
+}
+
+#nextSound:hover,
+#nextSound:focus{
+  background-color: DarkBlue;
+}
+
+#mute:hover,
+#mute:focus{
+  background-color: DarkOrange;
+}
+

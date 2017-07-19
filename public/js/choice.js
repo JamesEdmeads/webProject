@@ -42,6 +42,7 @@ function success(list)  {
         var li = document.createElement("LI");
         li.addEventListener('click', add0);
         li.innerHTML = response[i];
+        li.className = "list";
         ul.appendChild(li);
       }
     }

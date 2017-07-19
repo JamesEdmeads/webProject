@@ -9,13 +9,13 @@
   <script src = "js/view.js"></script>
 </head>
 <body>
-
+  <img id = "top" src = "handinhand.jpg"></img>
   <div id = "image" src = ""></div>
 
   <section id = "addMore">
     <p>Add new images:</p>
       <form action = "/addPic" enctype="multipart/form-data" method = "post">
-      <input id = "picUpload" type = "file" name = "upload" multiple class = "buttons"></input>
+      <input id = "picUpload" type = "file" name = "upload" multiple></input>
       <input class = "hidden" type = "text" value = "" name = "creator" id = "creator"></input>
       <input class = "hidden" type = "text" value = "" name = "owner" id = "owner"></input>
       <input type = "submit" value="Upload" class = "buttons"></input>

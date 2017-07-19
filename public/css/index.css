@@ -9,8 +9,8 @@
 
 h1 {
   position: absolute;
-  left : 33%;
-  top : 30%;
+  left : 31%;
+  top : 25%;
 
 }
 
@@ -44,7 +44,15 @@ h1 {
 #newUser{
  position: relative;
   left: 10%;
+  background-color:orange;
 }
+
+#newUser:hover,
+#newUser:focus{
+  background-color: DarkOrange;
+}
+
+
 
 #tick {
   position: relative;
@@ -56,7 +64,13 @@ h1 {
   position: relative;
   top : 70px;
   left: 30%;
+  background-color: orange;
 
+}
+
+#formSend:hover,
+#formSend:focus{
+  background-color: DarkOrange;
 }
 
 #send{
@@ -68,6 +82,8 @@ h1 {
 input[type=checkbox]{
   transform: scale(1.5);
 }
+
+
 
 
 

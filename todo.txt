@@ -1,14 +1,9 @@
-actual view page - glitch - plays first one twice
-
 server -
+  is it worth it?
   session cookies / tables
   https
   http server to re-direct
-  clean up
-  name changes
-  changes for other browers - audio
-
-css - all
+  changes for other browers - audios
 
 add a readme
 

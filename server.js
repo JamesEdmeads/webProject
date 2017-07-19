@@ -1,13 +1,5 @@
 //adapted from Dr Ian Holyer's server.js
 
-/* TODO:
-  session cookies / tables
-  https
-  http server to re-direct
-  clean up
-  name changes
-  changes for other browers - audio
-*/
 
 var http = require("http");
 var formidable = require("formidable");
@@ -20,6 +12,7 @@ var dbFunction = require("./DB/db.js");
 
 startHTTP(8080);
 
+//creates server and starts listening on port
 function startHTTP(port) {
 
     types = defineTypes();
@@ -38,29 +31,31 @@ function startHTTP(port) {
 function handleHTTP(request, response) {
 
     var url = request.url.toLowerCase();
-    var requestURL = url.split("?");
+    var reqType = url.split("?");
 
     if (url.endsWith("/")) url = url + "index.html";
     if(reject(url)) return fail(response, NotFound, "URL access refused");
     if(isBanned(url)) return fail(response, NotFound, "URL has been banned");
     var type = findType(url, request);
 
-    switch (requestURL[0])  {
-      case "/newuser" : newUser(requestURL[1], requestURL[2], requestURL[3], response, type); break;
-      case "/login" : login(requestURL[1], requestURL[2], response, type); break;
-      case "/associate" : associate(requestURL[1], requestURL[2], response, type); break;
-      case "/display" : display(requestURL[1], response, type); break;
+    switch (reqType[0])  {
+      case "/newuser" : newUser(reqType[1], reqType[2], reqType[3], response, type); break;
+      case "/login" : login(reqType[1], reqType[2], response, type); break;
+      case "/associate" : associate(reqType[1], reqType[2], response, type); break;
+      case "/display" : display(reqType[1], response, type); break;
       case "/addpic" : addPic(request, response, type); break;
       case "/addmusic" : addMusic(request, response, type); break;
-      case "/relations" : getRelations(requestURL[1], response, type); break;
+      case "/relations" : getRelations(reqType[1], response, type); break;
       default: defaultReply(response, type, url);
 
     }
 
-    //if (type == null) return fail(response, BadType, "File type unsupported"); //TODO - add all types we allow
-
 }
 
+//all below functions wrappers for db.functions that pass execute to be used
+//on completion of database actions
+
+//gets user's associated peoplpe
 function getRelations(id, response, type)  {
 
   dbFunction.getPersonAssociation(id, execute);
@@ -73,6 +68,7 @@ function getRelations(id, response, type)  {
   }
 }
 
+//gets media that belongs to user
 function display(owner, response, type)  {
 
   dbFunction.getMedia(owner, execute);
@@ -86,6 +82,7 @@ function display(owner, response, type)  {
 
 }
 
+//associates user with another person
 function associate(name, owner, response, type)  {
 
     dbFunction.associate(name, owner, execute);
@@ -98,6 +95,7 @@ function associate(name, owner, response, type)  {
     }
 }
 
+//checks login details
 function login(name, pw, response, type)  {
 
   var user = dbFunction.checkUser(name, pw, execute);
@@ -111,8 +109,9 @@ function login(name, pw, response, type)  {
 
 }
 
+//adds music to db and associates with an image file
 function addMusic(request, response, type) { 
-    //TODO: cant load same file for two different pics: so check in db - if already exists then insert into media associate
+
     var name0, path, owner, creator, associate;
 
     var form = new formidable.IncomingForm();
@@ -120,9 +119,8 @@ function addMusic(request, response, type) {
     form.parse(request, function(err, fields, files){
       var oldpath = files.upload.path;
       var newpath = './files/'+owner+'/' + files.upload.name;
-      console.log("NEWPATH: ", newpath);
       fs.rename(oldpath, newpath, function (err) {
-        if (err) console.log(err); //TODO:change
+        if (err) console.log(err); //for maintenance
       });
      });
 
@@ -158,17 +156,17 @@ function addMusic(request, response, type) {
 
 }
 
+// adds an image to a user's profile
 function addPic(request, response, type)  {
-  //TODO: get owner when pics added
+
   var name0, path, owner, creator;
 
     var form = new formidable.IncomingForm();
     form.parse(request, function(err, fields, files){
       var oldpath = files.upload.path;
       var newpath = './files/'+owner+'/' + files.upload.name;
-  console.log("NEWPATH: ", newpath);
       fs.rename(oldpath, newpath, function (err) {
-        if (err) console.log(err); //TODO:change
+        if (err) console.log(err); //for maintenance
       });
      });
 
@@ -189,7 +187,6 @@ function addPic(request, response, type)  {
     form.on('end', function(){   
       var path0 = './files/'+owner+'/'+path; 
       var name1 = owner+'/'+name0;
-      console.log("HERE: ", owner, " file name :", name1);
 
       dbFunction.addMedia(name1, path0, creator, owner, null,  execute ); 
 
@@ -200,12 +197,12 @@ function addPic(request, response, type)  {
 
 }
 
+//adds a nwe user to the database
 function newUser(name, pw, owner, response, type)  {
   
     if(owner === "true") {
       mkdir('./files/'+name, function (err) {
-        if(err) console.log(err)
-        else console.log("done"); //TODO: change
+        if(err) console.log(err) //for maintenance
       });
     }
 
@@ -228,12 +225,13 @@ function newUser(name, pw, owner, response, type)  {
     
 
 // Loads the website if it is allowed
-function defaultReply(response, type, url){ //TODO:this will need to change to be secure
+function defaultReply(response, type, url){ 
 
     if (type === null) return fail(response, BadType, "File type unsupported");
     var place = url.lastIndexOf(".");
     var bit = url.substring(place);
-    if(bit === ".jpg" || bit === ".mp3") {
+    if(bit === ".jpg" || bit === ".mp3" || bit === ".jpeg" || bit === ".png" 
+      || bit === ".aac" || bit === ".wav" || bit === ".ogg") {
       var file = "."+url;
     }else{
       var file = "./public" + url;
@@ -304,7 +302,7 @@ function findType(url, request) {
 }
 
 
-// Addapted to the types we use
+// Addapted to the types used
 function defineTypes() {
 
     var types = {
@@ -316,12 +314,7 @@ function defineTypes() {
         gif  : "image/gif",    // for images copied unchanged
         jpeg : "image/jpeg",   // for images copied unchanged
         jpg  : "image/jpeg",   // for images copied unchanged
-        svg  : "image/svg+xml",
-        json : "application/json",
-        pdf  : "application/pdf",
         txt  : "text/plain",
-        ttf  : "application/x-font-ttf",
-        woff : "application/font-woff",
         aac  : "audio/aac",
         mp3  : "audio/mpeg",
         mp4  : "video/mp4",

@@ -81,7 +81,7 @@ function display()  {
               appendImage(node, results[i+1], results[i]);
             }
           }
-          else if(part === "mp3" || part === 'aac') { 
+          else if(part === "mp3" || part === 'aac' || part === "ogg" || part === "wav") { 
             appendMusic(node, results[i+1], results[i])
           }
         }   
@@ -157,7 +157,7 @@ function addMusicUpload(node)  {
   input0.id = "musicUpload";
   input0.type = "file";
   input0.name = "upload";
-  input0.className = "buttons";
+  //input0.className = "buttons";
   inputs.push(input0);
 
   for(var i = 1; i < 4; i++) {
