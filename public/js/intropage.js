@@ -7,7 +7,7 @@ addEventListener('load', setUp);
 function associate() {
 
   var store = sessionStorage.getItem('id');
-  var userOwner = document.getElementById('ownerName').value;
+  var userOwner = source('ownerName').value;
   var send = new XMLHttpRequest();
 
   send.onreadystatechange = updatePage;
@@ -33,7 +33,7 @@ function associate() {
 
 //deals with all failed associations
 function fail(code)  {
-  var show = document.getElementById('fail');
+  var show = source('fail');
   var reply;
   switch(code) {
     case "wrongUName": 
@@ -59,11 +59,9 @@ function fail(code)  {
 //association to an account they are already connected to
 function addContinue()  {
 
-  var button = document.createElement("INPUT");
-  button.type = "button";
+  var button = createInput("none", "button", "none", "buttons");
   button.value = "continue";
-  button.className = "buttons";
-  button.addEventListener('click', addShow);
+  event(button, 'click', addShow);
   var cont = document.getElementById('cont');
   cont.appendChild(button);
 
@@ -72,7 +70,7 @@ function addContinue()  {
 //gets values from page to re-direct user to their story page
 function addShow() {
 
-  var userOwner = document.getElementById('ownerName').value;
+  var userOwner = source('ownerName').value;
   showStory(userOwner);
 
 }
@@ -90,18 +88,15 @@ function newOwner()  {
 
   var owner = sessionStorage.getItem('id');
   sessionStorage.setItem('associate', owner);
-  var div = document.getElementById("newOwner");
+  var div = source("newOwner");
 
-  var p = document.createElement("P");
+  var p = create("P", "none", "none");
   p.innerHTML = "To start recording your story click continue";
   div.appendChild(p);
 
-  var cont = document.createElement("INPUT");
+  var cont = createInput("contId", "button", "none", "buttons");
   cont.value = "continue";
-  cont.type = "button";
-  cont.id = "contId";
-  cont.className = "buttons";
-  cont.addEventListener('click', go);
+  event(cont,'click', go);
   div.appendChild(cont);
 
 }
@@ -117,10 +112,12 @@ function go() {
 function setUp()  {
 
   var owner = sessionStorage.getItem('owner');
+  var ownerGo = source('oNameGo')
+  event(ownerGo, 'click', associate);
 
-  document.getElementById('oNameGo').addEventListener('click', associate);
   if(owner==="false") {
-    document.getElementById('rel').style.display = "block";
+    var rel = source('rel');
+    rel.style.display = "block";
   } 
   else {
     newOwner();

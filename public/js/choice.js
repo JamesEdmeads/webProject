@@ -34,15 +34,14 @@ function success(list)  {
     window.location.href = "view.html";
   } else {
     var response = list.split("?");
-    var res = document.getElementById('fail');
+    var res = source('fail');
     res.innerHTML = "Select Person's story to update"
-    var ul = document.createElement("UL");
+    var ul = create("UL", "none", "none");
     for (var i = 1; i < response.length; i++)  {
       if(response[i] !== "") {
-        var li = document.createElement("LI");
-        li.addEventListener('click', add0);
+        var li = create("LI", "none", "list");
+        event(li, 'click', add0);
         li.innerHTML = response[i];
-        li.className = "list";
         ul.appendChild(li);
       }
     }
@@ -62,7 +61,7 @@ function add0()  {
 //handles fails
 function fail(error)  {
 
-  var reply = document.getElementById('fail');
+  var reply = source('fail');
   if(error === "noAssociate")
     reply.innerHTML = "no one is connected to your account."+
     " Please add connection";
@@ -103,11 +102,13 @@ function add() {
 //of the story or a contributor and changes the options accordingly
 function setUp(){
 
-  document.getElementById("update").addEventListener('click', send);
-  var view = document.getElementById("view");
-  view.addEventListener('click', viewStory);
-  var add0 = document.getElementById("add");
-  add0.addEventListener('click', add);
+  var update = source("update");
+  var view = source("view");
+  var add0 = source("add");
+
+  event(update, 'click', send);
+  event(view, 'click', viewStory);
+  event(add0, 'click', add);
 
   var owner = sessionStorage.getItem('owner');
 

@@ -16,9 +16,11 @@ function setUp() {
 function updateForm()  {
 
   var creator = sessionStorage.getItem('id');
-  document.getElementById('creator').value = creator; 
+  var create = source('creator');
+  create.value = creator; 
   var owner = sessionStorage.getItem('associate');
-  document.getElementById('owner').value = owner;
+  var own = source('owner')
+  own.value = owner;
 
 }
 
@@ -28,8 +30,10 @@ function ownerOptions()  {
   var owner = sessionStorage.getItem('owner');
 
   if(owner === 'true' || owner === 1) {
-    document.getElementById("viewButton").style.display = "block";
-    document.getElementById('view').addEventListener('click', view);
+    var viewBut = source("viewButton");
+    viewBut.style.display = "block";
+    var view = source('view');
+    event(view, 'click', view);
   }
 
 }
@@ -106,12 +110,9 @@ async function fail() {
 //creates image HTML for each image
 function appendImage(node, next, current)  {
 
-  var nLine = document.createElement("BR"); 
+  var nLine = create("BR", "none", "none"); 
   node.appendChild(nLine);
-  var image = document.createElement("IMG");
-  image.src = next;
-  image.alt = current;
-  image.className = "image";
+  var image = createMedia("IMG", next, current, "image");
   node.appendChild(image);
   addMusicUpload(node);
 
@@ -120,18 +121,12 @@ function appendImage(node, next, current)  {
 //creates music HTML for each song associated with the image
 function appendMusic(node, next, song)  {
 
-  var name = document.createElement("LABEL");
+  var name = create("LABEL", "audioName", "audio");
   var temp = song.split("/")[1];
   name.innerHTML = temp.split("\.")[0];
-  name.className = "audio";
-  name.id = "audioName";
   node.appendChild(name);
-  var music = document.createElement("AUDIO");
-  music.controls = "controls";
-  music.controlsList = "nodownload";
-  music.src = next;
-  music.alt = song;
-  music.className = "audio";
+
+  var music = createMedia("AUDIO", next, song, "audio");
   node.appendChild(music);
 
 }
@@ -139,42 +134,30 @@ function appendMusic(node, next, song)  {
 //creates form HTML to add new music to each image file
 function addMusicUpload(node)  {
   var parent = node.lastChild.alt
-  var message = document.createElement("LABEL");
+
+  var message = create("LABEL", "none", "audioUploadTag");
   message.innerHTML = "upload new audio for this picure:";
-  message.className = "audioUploadTag"
   node.appendChild(message);
   
-  var form = document.createElement("FORM");
+  var form = create("FORM", "none", "musicForm");
   form.action = "/addMusic?0";
   form.enctype = "multipart/form-data";
   form.method = "post";
-  form.className = "musicForm";
 
   var names = ["creator", "assocPic", "ownerForm"];
   var inputs = [];
 
-  var input0 = document.createElement("INPUT");
-  input0.id = "musicUpload";
-  input0.type = "file";
-  input0.name = "upload";
-  //input0.className = "buttons";
+  var input0 = createInput("musicUpload", "file", "upload", "none"); 
   inputs.push(input0);
 
   for(var i = 1; i < 4; i++) {
-
-    var input = document.createElement("INPUT");
-    input.className = "hidden";
-    input.type = "text";
-    input.id = names[i-1];
-    input.name = names[i-1];
+    var input = createInput(names[i-1], "text", names[i-1], "hidden"); 
     inputs.push(input);
-
   }
 
-  var input4 = document.createElement("INPUT");
+  var input4 = create("INPUT", "none", "buttons");
   input4.type = "submit";
   input4.value = "Upload";
-  input4.className = "buttons";
   inputs.push(input4);
 
   for(var i = 0; i < inputs.length; i++)  {
@@ -202,7 +185,9 @@ function updateValues(input1, input2, input3, form)  {
 
     input3.value = sessionStorage.getItem('associate');
   }
-  console.log(form);
+  console.log(input1.name, " ", input1.value);
+console.log(input2.name, " ", input2.value);
+console.log(input3.name, " ", input3.value);
 }
 
 //checks whether images have already been seen so they are not displayed

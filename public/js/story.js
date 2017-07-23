@@ -16,21 +16,21 @@ var recording = false;
 
 function setUp() {
 
-  var nextImage = document.getElementById('nextImage');
-  var nextSong = document.getElementById('nextSound');
-  var record = document.getElementById('record');
-  var mute = document.getElementById('mute');
+  var nextImage = source('nextImage');//document.getElementById('nextImage');
+  var nextSong = source('nextSound');
+  var record = source('record');
+  var mute = source('mute');
 
-  mute.addEventListener('click', muteSong);
-  record.addEventListener('click', recordStart);
-  nextImage.addEventListener('click', nextPic);
-  nextSong.addEventListener('click', check);
+  event(mute, 'click', muteSong);
+  event(record, 'click', recordStart);
+  event(nextImage, 'click', nextPic);
+  event(nextSong, 'click', check);
 
   loadMedia();
-
   setUpAudio();
 
 }
+
 
 /*********************************************
 **          SetUp and server info           **
@@ -65,7 +65,7 @@ function loadMedia() {
             media.push(results[i]);
           }
         }
-      display();
+        display();
       } 
     }
 
@@ -75,14 +75,13 @@ function loadMedia() {
 
 function fail() {
   
-  var response = document.getElementById('response');
+  var response = source('response');
   response.innerHTML = 
   "No story to load, click continue to add to story";
 
-  var button = document.createElement('BUTTON');
-  button.className = "buttons";
+  var button = create('BUTTON', "none", "buttons");
   button.name = "continue";
-  button.addEventListener('click', update);
+  event(button, 'click', update);
   
   response.appendChild(button);
 
@@ -101,10 +100,9 @@ function update()  {
 
 function display()  {
 
-  var image = document.getElementById('image');
+  var image = source('image');
   var w = window.innerWidth;
   var h = window.innerHeight;
-  console.log(current);
   image.src = media[current];
   image.width = w-200;
   image.height = h;
@@ -159,7 +157,7 @@ function check()  {
 
 function nextSong() {
   
-  sound = document.getElementById('sound');
+  sound = source('sound');
   var song = getNextSong();
   
   var part = media[song].split("\.")[2];
@@ -201,12 +199,6 @@ function muteSong() {
   } else {
     sound.play();
   }
-
-}
-
-function getCurrent() {
-
-  return media[current].split("/")[3];  
 
 }
 

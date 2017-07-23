@@ -7,9 +7,9 @@ addEventListener('load', setUp);
 //outcomes
 function newSignUp()  {
 
-  var name = document.getElementById("name").value;
-  var pw = document.getElementById("pw").value;
-  var owner = document.getElementById("own").checked;
+  var name = source("name").value;
+  var pw = source("pw").value;
+  var owner = source("own").checked;
 
   var send = new XMLHttpRequest();
 
@@ -22,12 +22,11 @@ function newSignUp()  {
     if(this.readyState === 4 && this.status === 200) {
       var response = this.responseText;
       var response = response.split("?");
-      console.log(response[0]);
+      var reply = source('response');
       switch(response[0])  {
-        case "fail": document.getElementById("response").innerHTML
-           = "failed: please try again";break;
+        case "fail": reply.innerHTML = "failed: please try again";break;
         case "success": newUser(response[1], response[2]);break;
-        case "alreadyExists": document.getElementById("response").innerHTML
+        case "alreadyExists": reply.innerHTML
            = "user already exists. Choose a new username";break;
         default: window.location.href = "index.html";
 
@@ -50,9 +49,10 @@ function newUser(id, owner)  {
 //sends request to server to check log in details
 function login()  {
 
-  var name = document.getElementById('eUser').value;
-  var pw = document.getElementById('ePw').value;
+  var name = source('eUser').value;
+  var pw = source('ePw').value;
 
+  
   var send = new XMLHttpRequest();
 
   send.onreadystatechange = updatePage;
@@ -63,11 +63,11 @@ function login()  {
     if(this.readyState === 4 && this.status === 200)  {
       var response = this.responseText;
       var response = response.split("?");
+      var reply = source('response');
       switch(response[0])  {
         case "wrong": redo(); break;
         case "success" : loggedIn(response[1], response[2]); break;
-        case "fail": document.getElementById("response").innerHTML 
-          = "please try again";break;
+        case "fail": reply.innerHTML = "please try again";break;
         default: window.location.href = "index.html";
 
       }
@@ -93,32 +93,43 @@ function loggedIn(response, owner)  {
 //displays error message for wrong log-in
 function redo() {
 
-  document.getElementById("response").innerHTML 
-    = "wrong password - please re-enter";
+  var response = source('response');
+  response.innerHTML = "wrong password - please re-enter";
 
 }
 
 //below functions display options depending on user selection
 function show()  {
 
-  document.getElementById('newUser0').style.display = "block";
-  document.getElementById('existUser').style.display = "none";
+  var newUser = source('newUser0');
+  newUser.style.display = "block";
+
+  var exist = source('existUser');
+  exist.style.display = "none";
 
 }
 
 function show0()  {
 
-  document.getElementById('existUser').style.display = "block";
-  document.getElementById('newUser0').style.display = "none";
+  var newUser = source('newUser0');
+  newUser.style.display = "none";
+
+  var exist = source('existUser');
+  exist.style.display = "block";
 
 }
 
 //initial set up function : adds event listeners
 function setUp()  {
   
-  document.getElementById('formSend').addEventListener('click', newSignUp);
-  document.getElementById('newUser').addEventListener('click', show);
-  document.getElementById('login').addEventListener('click', show0);
-  document.getElementById('send').addEventListener('click', login);
+  var formSend = source('formSend');
+  var newUser = source('newUser');
+  var login0 = source('login');
+  var send = source('send');
+
+  event(formSend, 'click', newSignUp);
+  event(newUser, 'click', show);
+  event(login0, 'click', show0);
+  event(send, 'click', login);
 
 }
