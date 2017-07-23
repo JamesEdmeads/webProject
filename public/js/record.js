@@ -36,6 +36,16 @@ function recordStart() {
 
 }
 
+function recordStart1() {
+  if(recording === false) {
+    recording = true;
+    startRecording();
+  } else {
+    recording = false;
+    stopRecording();
+  }
+}
+
 function startUserMedia(stream) {
   var input = audio_context.createMediaStreamSource(stream);   
   recorder = new Recorder(input);

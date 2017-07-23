@@ -18,12 +18,11 @@ function send()  {
             case "fail": 
             case "noAssociate" :  
             default : error(response0[0]);break;
-
           }
         }
     }
-
 }
+
 
 //if owner re-directs to view of story 
 //if not owner displays the stories user is allowed to contribute to
@@ -111,8 +110,8 @@ function setUp(){
   event(add0, 'click', add);
 
   var owner = sessionStorage.getItem('owner');
-
-  if(owner === "false") {
+  console.log(owner);
+  if(owner === "false" || owner === 0) {
     add0.style.display = "block";
   }
   else {

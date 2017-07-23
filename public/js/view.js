@@ -1,5 +1,9 @@
 
 var seen = [];
+var recorder;
+var recording = false;
+var associatePic;
+var reply;
 
 addEventListener('load', setUp);
 
@@ -9,6 +13,8 @@ function setUp() {
   updateForm();
   ownerOptions();
   display();
+  setUpAudio();
+  reply = source('reply');
 
 }
 
@@ -33,13 +39,13 @@ function ownerOptions()  {
     var viewBut = source("viewButton");
     viewBut.style.display = "block";
     var view = source('view');
-    event(view, 'click', view);
+    event(view, 'click', view0);
   }
 
 }
 
 //re-directs to the view story page
-function view()  {
+function view0()  {
 
   window.location.href = "story.html";
 
@@ -67,43 +73,50 @@ function display()  {
   function updatePage()  {
 
     if(this.readyState === 4 && this.status === 200) {
-
-      var response = this.responseText;
-      if(response === "fail" || response === "isNull" || 
-        response === "alreadyExists" || response === "fail") {
-          fail();
-      } else {
-        var results = response.split("?");
-        var node = source('image');
-
-        for(var i = 1; i < results.length; i += 2) {
-          var part = results[i].split("\.")[1];
-          if(isVisual(part))  { 
-            seen.push(results[i]);
-            if(!done(results[i]))  {
-              appendImage(node, results[i+1], results[i]);
-            }
-          }
-          else if(isAudio(part)){ 
-            appendMusic(node, results[i+1], results[i])
-          }
-        }   
-      }
+      handleResponse(this.responseText);
     }
+  }
+}
+
+function handleResponse(response) {
+  
+  if(response === "fail" || response === "isNull" || 
+     response === "alreadyExists" || response === "fail") {
+     fail();
+  } else {
+     var results = response.split("?");
+     var node = source('image');
+
+     for(var i = 1; i < results.length; i += 2) {
+      var part = results[i].split("\.")[1];
+      if(isVisual(part))  { 
+        seen.push(results[i]);
+        if(!done(results[i]))  {
+          appendImage(node, results[i+1], results[i]);
+        }
+      } else if(isAudio(part)){ 
+        appendMusic(node, results[i+1], results[i])
+      }
+    }   
   }
 }
 
 //pauses for a second to display message then re-directs to 
 //the log in page
 function sleep(ms) {
+
   return new Promise(resolve => setTimeout(resolve, ms));
+
 }
 
 async function fail() {
+
   reply.innerHTML = "Error, returning to log in";
   await sleep(1000);
   window.location.href = "index.html";
+
 }
+
   
 
 //creates image HTML for each image
@@ -132,7 +145,9 @@ function appendMusic(node, next, song)  {
 
 //creates form HTML to add new music to each image file
 function addMusicUpload(node)  {
+
   var parent = node.lastChild.alt
+  addRecord(node);
 
   var message = create("LABEL", "none", "audioUploadTag");
   message.innerHTML = "upload new audio for this picure:";
@@ -168,12 +183,80 @@ function addMusicUpload(node)  {
 
 }
 
+function addRecord(node) {
+
+  var button = create("BUTTON", "record", "buttons");
+  button.innerHTML = "record story";
+  event(button, 'click', getParentPic);
+  node.appendChild(button);
+
+}
+
+function getParentPic() {
+
+  associatePic = this.previousSibling.alt;
+  recordStart1();
+
+}
+
+function send(blob) {
+
+  var formData = getForm(blob);
+
+  var send = new XMLHttpRequest();
+  send.onreadystatechange = updatePage0;
+
+  send.open("POST", "addstory?", true);
+  send.send(formData);
+    
+  function updatePage0()  {  
+    if(this.readyState === 4 && this.status === 200) {
+      handleSendResponse(this.responseText);
+    }
+  }
+}
+
+function getForm(blob) {
+
+  var formData = new FormData();
+  var mediaName = associatePic.split("/")[1];
+  var name = mediaName.split("\.")[0];  
+  var id = sessionStorage.getItem('id'); 
+  var creator = sessionStorage.getItem('associate');
+  var num = time();
+
+  formData.append("file", blob, name+num+"story.wav");
+  formData.append("assocPic", associatePic);
+  formData.append("creator", creator);
+  formData.append("owner", id);
+
+  return formData;
+
+}
+
+function handleSendResponse(response) {
+
+  var success = false;
+  var answer;
+
+  switch(response) {
+    case "alreadyExist": answer = "Already Exists"; break;
+    case "failtypes": answer = "Unable to associate image with image"; break;
+    case "success": success = true; break;
+    default: answer = "error with upload";
+  }
+  if(!success) reply.innerHTML = answer;
+  else
+    window.location.href = "view.html";
+}
+
+
 //updates form created above for the music uploads to have the 
 //correct values
 function updateValues(input1, input2, input3, form)  {
 
   input1.value = sessionStorage.getItem('id');
-  input2.value = form.previousSibling.previousSibling.alt;
+  input2.value = form.previousSibling.previousSibling.previousSibling.alt;
 
   var owner = sessionStorage.getItem('owner');
 
@@ -186,6 +269,7 @@ function updateValues(input1, input2, input3, form)  {
 
 //checks whether images have already been seen so they are not displayed
 function done(current)  {
+
   var i;
   for(i = 0; i < seen.length-1; i++)  {
     if(seen[i] === current) return true;

@@ -20,23 +20,28 @@ function newSignUp()  {
   function updatePage()  {
 
     if(this.readyState === 4 && this.status === 200) {
-      var response = this.responseText;
-      var response = response.split("?");
-      var reply = source('response');
-      switch(response[0])  {
-        case "fail": reply.innerHTML = "failed: please try again";break;
-        case "success": newUser(response[1], response[2]);break;
-        case "alreadyExists": reply.innerHTML
-           = "user already exists. Choose a new username";break;
-        default: window.location.href = "index.html";
-
-      }
+      handleResponse(this.responseText);
     }
+  }
+}
+
+function handleResponse(res) {
+
+  var response = res.split("?");
+  var reply = source('response');
+  console.log(response);
+  switch(response[0])  {
+    case "fail": reply.innerHTML = "failed: please try again";break;
+    case "success": newUser(response[1], response[2]);break;
+    case "alreadyExists": reply.innerHTML
+         = "user already exists. Choose a new username";break;
+    default: window.location.href = "index.html";
   }
 }
 
 //sets session storage details for logged in new user
 function newUser(id, owner)  {
+
   sessionStorage.setItem('id', id);
   sessionStorage.setItem('owner', owner);
   if(owner === true) {
@@ -51,8 +56,6 @@ function login()  {
 
   var name = source('eUser').value;
   var pw = source('ePw').value;
-
-  
   var send = new XMLHttpRequest();
 
   send.onreadystatechange = updatePage;
@@ -61,18 +64,20 @@ function login()  {
 
   function updatePage()  {
     if(this.readyState === 4 && this.status === 200)  {
-      var response = this.responseText;
-      var response = response.split("?");
-      var reply = source('response');
-      switch(response[0])  {
-        case "wrong": redo(); break;
-        case "success" : loggedIn(response[1], response[2]); break;
-        case "fail": reply.innerHTML = "please try again";break;
-        default: window.location.href = "index.html";
-
-      }
+      handleLoginResponse(this.responseText);
     }
+  }
+}
 
+function handleLoginResponse(res)  {
+  console.log(res);
+  var response = res.split("?");
+  var reply = source('response');
+  switch(response[0])  {
+    case "wrong": redo(); break;
+    case "success" : loggedIn(response[1], response[2]); break;
+    case "fail": reply.innerHTML = "please try again";break;
+    default: window.location.href = "index.html";
   }
 }
 
@@ -80,12 +85,14 @@ function login()  {
 //if user is owner sets associate to owner's details so that
 //files uploaded will record the owner as the contributor 
 function loggedIn(response, owner)  {
+
   sessionStorage.setItem('id', response);
-  owner = (owner == 0) ? false:true;
+  owner = (owner == 0 || owner === 'false') ? false:true;
   if(owner === true)  {
     sessionStorage.setItem('associate', response);
   }
   sessionStorage.setItem('owner', owner);
+
   window.location.href = "choice.html";
 
 }
@@ -119,9 +126,14 @@ function show0()  {
 
 }
 
+function resetLogin() {
+  sessionStorage.clear();
+}
+
+
 //initial set up function : adds event listeners
 function setUp()  {
-  
+
   var formSend = source('formSend');
   var newUser = source('newUser');
   var login0 = source('login');

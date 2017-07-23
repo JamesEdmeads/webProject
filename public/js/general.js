@@ -74,3 +74,14 @@ function isVisual(part) {
   }
 
 }
+
+function time() {
+
+  var date = new Date();
+  var seconds = date.getTime();
+
+  return Math.round(seconds / 1000);
+
+}
+
+

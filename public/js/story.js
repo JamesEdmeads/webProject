@@ -233,8 +233,9 @@ function getForm(blob) {
   var mediaName = media[current].split("/")[3];
   var name = mediaName.split("\.")[0];  
   var id = sessionStorage.getItem('id'); 
+  var num = time();
   mediaName = id + "/" + mediaName;
-  formData.append("file", blob, name+"story.wav");
+  formData.append("file", blob, name+num+"story.wav");
   formData.append("assocPic", mediaName);
   formData.append("creator", id);
   formData.append("owner", id);

@@ -19,13 +19,11 @@ function associate() {
     if(this.readyState === 4 && this.status === 200) {
       var response = this.responseText;
       var response = response.split("?");
-
       switch(response[0])  {
         case "success": showStory(userOwner);break;
         case "wrongUName": case "alreadyExists":
         case "fail": default: fail(response[0]); 
-      }
-      
+      } 
     }
   }
 

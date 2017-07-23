@@ -1,25 +1,28 @@
 server -
 
-  session cookies / tables
-  https: - make keys and add
-  http server to re-direct
-  clean up the file uploads
+all -> navigation buttons: home and log-out
+      modal cookies / storage etc
 
-  an ok to allow access
-
-all -> navigation buttons
-
-view.js -> to add the record sound
-        -> to add a view enlarged pic
-
-story.js -> to clean up the file upload -> deal with responses
-         -> next pic etc
+css:  to sort out
+      fonts?
 
 add a readme
 
-css:  to sort out
 
-<link rel="stylesheet" media="screen and (min-width: 600px) and (max-width : 768px) "
-     href="stylesheets/indextablet.css" type="text/css" />
-  <link rel="stylesheet" media="screen and (max-width : 600px) "
-     href="stylesheets/indexphone.css" type="text/css" />
+
+
+for deploy
+  -> change names
+  -> update certs for https
+
+
+
+
+*****************************************
+to do later for clean up:
+
+  session cookies / tables
+  on request for new association -> message for owner: accept or decline
+
+
+
