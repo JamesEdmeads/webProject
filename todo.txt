@@ -1,21 +1,12 @@
 server -
 
-all -> navigation buttons: home and log-out
-      modal cookies / storage etc
-
 css:  to sort out
-      fonts?
 
 add a readme
-
-
-
 
 for deploy
   -> change names
   -> update certs for https
-
-
 
 
 *****************************************

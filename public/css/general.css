@@ -4,6 +4,26 @@ body {
 
 }
 
+.home {
+  font-size: 14px;
+  border-radius: 14px;
+  text-align: center;
+  padding: 12px 12px;
+  color: white;
+  background-color: blue;
+  position: absolute:
+  left: 5%;
+  top: 180px;
+
+}
+
+.home:hover,
+.home:focus {
+  cursor: pointer;
+  background-color: DarkBlue;
+
+}
+
 .buttons  {
 
   font-size: 20px;

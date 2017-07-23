@@ -2,6 +2,18 @@
  used to minimise code in js files
  only used where reduces overall code*/
 
+addEventListener('load', homeButton);
+
+function homeButton() {
+  try {
+    var home = source('home');
+    event(home, 'click', logOut);
+  }catch(err){
+    console.log("no button");
+  }
+
+}
+
 function source(name) {
   return document.getElementById(name);
 }
@@ -72,6 +84,12 @@ function isVisual(part) {
   } else {
     return false;
   }
+
+}
+
+function logOut() {
+
+  window.location.href = "index.html";
 
 }
 

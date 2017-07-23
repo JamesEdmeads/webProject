@@ -105,6 +105,7 @@ function setUp(){
   var view = source("view");
   var add0 = source("add");
 
+
   event(update, 'click', send);
   event(view, 'click', viewStory);
   event(add0, 'click', add);

@@ -130,6 +130,11 @@ function resetLogin() {
   sessionStorage.clear();
 }
 
+function remove() {
+
+  this.parentNode.parentNode.style.display = 'none';
+
+}
 
 //initial set up function : adds event listeners
 function setUp()  {
@@ -138,10 +143,12 @@ function setUp()  {
   var newUser = source('newUser');
   var login0 = source('login');
   var send = source('send');
+  var close = source('x');
 
   event(formSend, 'click', newSignUp);
   event(newUser, 'click', show);
   event(login0, 'click', show0);
   event(send, 'click', login);
+  event(close, 'click', remove);
 
 }
