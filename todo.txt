@@ -1,11 +1,31 @@
 server -
-  is it worth it?
+
   session cookies / tables
-  https
+  https: - make keys and add
   http server to re-direct
   changes for other browers - audios
+  clean up the file uploads
+
+  test function -> to record in the database
+
+  an ok to allow access
+  utils class - listen, event etc
+
+view.js -> to add the record sound
+        -> to add a view enlarged pic
+        -> audio uploads do differently?
+
+story.js -> to clean up the file upload
+         -> must be able to clean this file
+         -> next pic etc
 
 add a readme
 
 
 
+css:  to sort out
+
+<link rel="stylesheet" media="screen and (min-width: 600px) and (max-width : 768px) "
+     href="stylesheets/indextablet.css" type="text/css" />
+  <link rel="stylesheet" media="screen and (max-width : 600px) "
+     href="stylesheets/indexphone.css" type="text/css" />

@@ -13,6 +13,22 @@
 
 }
 
+#record {
+  position: absolute;
+  right: 15px;
+  top: 400px;
+
+
+}
+
+#recorded {
+  position: absolute;
+  right: 15px;
+  top: 475px;
+
+
+}
+
 #mute {
   position: absolute;
   right: 3px;

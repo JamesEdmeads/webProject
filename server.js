@@ -1,10 +1,11 @@
-//adapted from Dr Ian Holyer's server.js
+//adapted from Dr Ian Holyer's server.js and server used for web project
 
 
 var http = require("http");
 var formidable = require("formidable");
 var QS = require("querystring");
 var fs = require("fs");
+var fs0 = require('fs-extra');
 var mkdir = require('mkdirp');
 var OK = 200, NotFound = 404, BadType = 415, Error = 500;
 var types, banned, parameters = "";
@@ -44,13 +45,84 @@ function handleHTTP(request, response) {
       case "/associate" : associate(reqType[1], reqType[2], response, type); break;
       case "/display" : display(reqType[1], response, type); break;
       case "/addpic" : addPic(request, response, type); break;
-      case "/addmusic" : addMusic(request, response, type); break;
       case "/relations" : getRelations(reqType[1], response, type); break;
+      case "/addstory": case "/addmusic":
+        addStory(request, response, type, reqType[0]); break;
       default: defaultReply(response, type, url);
 
     }
 
 }
+
+//inspired by
+//http://www.codediesel.com/nodejs/processing-file-uploads-in-node-js/
+//these should be rearranged to all include the same
+//can we use fs0 for all
+function addStory (request, response, type, reDirect) {
+
+  var owner0, creator, associate, name0;
+  var form = new formidable.IncomingForm();
+
+  form.parse(request, function (err, fields, file) {
+  });
+
+  form.on('file', function(name, file)  { 
+    name0 = file.name;
+  });
+
+  form.on('field', function(name, value) {
+    if(name === "creator")  {  
+      creator = value;
+    }
+    else if(name === "assocPic") {
+      associate = value;
+    }
+    else {
+      owner0 = value;
+    }
+  });
+
+  form.on('end', function(fields, files) {
+      var tempPath = this.openedFiles[0].path;
+      var file_name = this.openedFiles[0].name;
+      var newPath = './files/'+owner0+"/"+file_name; 
+      if(!checkType(name0)) {
+        console.log("FAILED");
+        execute("fail");
+      }
+      else {
+        fs0.copy(tempPath, newPath, function(err) {  
+          if (err) {
+            console.error(err);
+          } else {
+            var name1 = owner0+"/"+name0;
+            dbFunction.addMedia(name1, newPath, creator, owner0, associate, execute); 
+          }
+        });
+      }
+        function execute(result) {
+        if(reDirect === "/addmusic") {
+          renderHTML("./public/view.html", response, type);
+        } else {
+        var textTypeHeader = { "Content-Type": "text/plain" };
+        response.writeHead(200, textTypeHeader);
+        response.write(result);
+        response.end()
+      }
+    }
+  });  
+
+}
+
+function checkType(name)  {
+
+  var check = name.split("\.")[1];
+  if(check === 'wav' || check === 'mp3' || check === 'aac' || check === 'ogg')
+    return true;
+  else return false;
+  
+}
+
 
 //all below functions wrappers for db.functions that pass execute to be used
 //on completion of database actions
@@ -109,53 +181,6 @@ function login(name, pw, response, type)  {
 
 }
 
-//adds music to db and associates with an image file
-function addMusic(request, response, type) { 
-
-    var name0, path, owner, creator, associate;
-
-    var form = new formidable.IncomingForm();
-
-    form.parse(request, function(err, fields, files){
-      var oldpath = files.upload.path;
-      var newpath = './files/'+owner+'/' + files.upload.name;
-      fs.rename(oldpath, newpath, function (err) {
-        if (err) console.log(err); //for maintenance
-      });
-     });
-
-    form.on('fileBegin', function (name, file){  
-      path = file.name;
-    });
-
-    form.on('file', function(name, file)  { 
-      name0 = file.name;
-    });
-
-    form.on('field', function(name, value) {
-      if(name === "creator")  {  
-        creator = value;
-      }
-      else if(name === "assocPic") {
-        associate = value;
-      }
-      else {
-        owner = value;
-      }
-    });
-
-    form.on('end', function(){
-      var path0 = './files/'+owner+'/'+path;
-      var name1 = owner+'/'+name0;
-      dbFunction.addMedia(name1, path0, creator, owner, associate, execute ); 
-      function execute() {
-        renderHTML("./public/view.html", response, type);
-      }
-    });
-
-
-}
-
 // adds an image to a user's profile
 function addPic(request, response, type)  {
 
@@ -190,7 +215,7 @@ function addPic(request, response, type)  {
 
       dbFunction.addMedia(name1, path0, creator, owner, null,  execute ); 
 
-      function execute() {
+      function execute(result) {
         renderHTML("./public/view.html", response, type);
       }
     });

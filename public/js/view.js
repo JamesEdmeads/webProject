@@ -145,7 +145,7 @@ function addMusicUpload(node)  {
   node.appendChild(message);
   
   var form = document.createElement("FORM");
-  form.action = "/addMusic";
+  form.action = "/addMusic?0";
   form.enctype = "multipart/form-data";
   form.method = "post";
   form.className = "musicForm";
@@ -202,7 +202,7 @@ function updateValues(input1, input2, input3, form)  {
 
     input3.value = sessionStorage.getItem('associate');
   }
-
+  console.log(form);
 }
 
 //checks whether images have already been seen so they are not displayed

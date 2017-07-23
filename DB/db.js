@@ -11,25 +11,24 @@ var db = new sqlite3.Database(file);
 function addAssociation(name, associate, type, execute) {
 
   if(associate === undefined || associate === null) {
-    execute();
+    execute("noassociate");
   } else {
-    addMediaAssociation(associate, name);
-    execute();
+    addMediaAssociation(associate, name, execute);
   }
 
 }
 
 //adds media association only between an audio file and picture file
-function addMediaAssociation(visual, audio)  {
+function addMediaAssociation(visual, audio, execute)  {
 
   var type = audio.split('\.');
 
   if(visual === undefined || visual === null) {
-    console.log("MediaAssociation Failed");
+    execute("noassociate");
   }
 
   else if(type[1] === 'jpg' || type[1] === 'png' || type[1] === 'jpeg') {
-    console.log("Media Association: cannot add pic to pic");
+    execute("failtypes");
   } else {
     var ps0 = db.prepare("select * from mediaAssociate where visual = ? and audio = ?");
     try {
@@ -37,7 +36,7 @@ function addMediaAssociation(visual, audio)  {
       ps0.finalize();
       function check(err, row) {
         if(row !== undefined) {
-          console.log("Media Association: failed already exists");
+          execute("alreadyexists");
         } else {
           try{
             var ps1 = db.prepare("insert into mediaAssociate "
@@ -45,16 +44,17 @@ function addMediaAssociation(visual, audio)  {
             try{
               ps1.run(visual, audio);
               ps1.finalize();
-            }catch(err){
-              console.log("Media Association: failed to add");
+              execute("success");
+            }catch(err){;
+              execute("fail");
             }
           }catch(err){
-            console.log("Media Association: database error");
+            execute("fail");
           }
         }
       }
     } catch(err) {
-      console.log("Media Association: database error");
+      execute("fail");
     }
   }
 }
@@ -205,17 +205,16 @@ module.exports = {
               ps1.run(name, place, creator, owner);
               ps1.finalize();
               if(associate !== null) {
-                addMediaAssociation(associate, name);
-                execute();
+                addMediaAssociation(associate, name, execute);
               }
-              else {  execute();  }
+              else {  execute("success");  }
             }catch(err){
-              execute();
+              execute("fail");
             }
           }
         }
       }catch(err){
-        execute();
+        execute("fail");
       }
     }
   },
@@ -246,6 +245,7 @@ module.exports = {
             rows.forEach(function(row) {
               result = result +"?"+row.name+"?"+row.place+"?"+row.sName+"?"+row.sPlace;
             });
+
             execute("success"+result);
           }
         }      
