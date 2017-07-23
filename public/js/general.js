@@ -54,3 +54,23 @@ function createMedia(element, source, alter, classname) {
   return temp;
 
 }
+
+function isAudio(part) {
+
+  if(part === "mp3" || part === 'aac' || part === "ogg" || part === "wav") {
+    return true;
+  } else {
+    return false;
+  }
+
+}
+
+function isVisual(part) {
+  
+  if(part === "jpg" || part === "png" || part === "jpeg") {
+    return true;
+  } else {
+    return false;
+  }
+
+}

@@ -62,14 +62,14 @@ function add0()  {
 function fail(error)  {
 
   var reply = source('fail');
-  if(error === "noAssociate")
-    reply.innerHTML = "no one is connected to your account."+
-    " Please add connection";
-  else if(error === "fail")
-    reply.innerHTML = "unable to get connection, please try again";
-  else if (error === "isNull") 
-    goBack(reply);
-
+  switch(error) {
+    case "noAssociate": reply.innerHTML = "no one is connected to your account."+
+    " Please add connection"; break;
+    case "fail": reply.innerHTML = "unable to get connection, please try again";
+      break;
+    case "isNull": default:
+      goBack(reply);
+  }
 }
 
 //pauses for a second to display message then re-directs to 

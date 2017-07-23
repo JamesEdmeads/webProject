@@ -7,10 +7,12 @@ server -
 
   an ok to allow access
 
+all -> navigation buttons
+
 view.js -> to add the record sound
         -> to add a view enlarged pic
 
-story.js -> to clean up the file upload
+story.js -> to clean up the file upload -> deal with responses
          -> next pic etc
 
 add a readme

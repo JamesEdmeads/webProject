@@ -245,7 +245,7 @@ module.exports = {
             rows.forEach(function(row) {
               result = result +"?"+row.name+"?"+row.place+"?"+row.sName+"?"+row.sPlace;
             });
-
+            
             execute("success"+result);
           }
         }      

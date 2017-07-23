@@ -40,7 +40,7 @@ function ownerOptions()  {
 
 //re-directs to the view story page
 function view()  {
-  //re-direct to view button
+
   window.location.href = "story.html";
 
 }
@@ -69,23 +69,22 @@ function display()  {
     if(this.readyState === 4 && this.status === 200) {
 
       var response = this.responseText;
-      if(response === "fail" || response === "isNull" || response === "alreadyExists"||response === "fail") {
+      if(response === "fail" || response === "isNull" || 
+        response === "alreadyExists" || response === "fail") {
           fail();
-      }
-      else {
+      } else {
         var results = response.split("?");
-        var i;
-        var node = document.getElementById('image');
+        var node = source('image');
 
-        for(i = 1; i < results.length; i += 2) {
+        for(var i = 1; i < results.length; i += 2) {
           var part = results[i].split("\.")[1];
-          if(part === "jpg" || part === "png" || part === "jpeg")  { 
+          if(isVisual(part))  { 
             seen.push(results[i]);
             if(!done(results[i]))  {
               appendImage(node, results[i+1], results[i]);
             }
           }
-          else if(part === "mp3" || part === 'aac' || part === "ogg" || part === "wav") { 
+          else if(isAudio(part)){ 
             appendMusic(node, results[i+1], results[i])
           }
         }   
@@ -172,22 +171,17 @@ function addMusicUpload(node)  {
 //updates form created above for the music uploads to have the 
 //correct values
 function updateValues(input1, input2, input3, form)  {
-  
-  var value3;
+
   input1.value = sessionStorage.getItem('id');
   input2.value = form.previousSibling.previousSibling.alt;
+
   var owner = sessionStorage.getItem('owner');
 
   if(owner === 'true' || owner === 1) {
-    value3 = sessionStorage.getItem('id');
-    input3.value = value3;
+    input3.value = sessionStorage.getItem('id');
   } else {
-
     input3.value = sessionStorage.getItem('associate');
   }
-  console.log(input1.name, " ", input1.value);
-console.log(input2.name, " ", input2.value);
-console.log(input3.name, " ", input3.value);
 }
 
 //checks whether images have already been seen so they are not displayed
