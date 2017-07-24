@@ -1,26 +1,31 @@
+/*re-directing page to view or update story for owners
+  for non-owners asks server who they are associated with
+  and offers users choice on whose story to update
+*/
+
 addEventListener('load', setUp);
 
 //sends message to server to get associations for user
 function send()  {
 
-    var id = sessionStorage.getItem('id');
-    var send = new XMLHttpRequest();
-    send.onreadystatechange = updatePage;
-    send.open("GET", "relations?"+id);
-    send.send();
+  var id = sessionStorage.getItem('id');
+  var send = new XMLHttpRequest();
+  send.onreadystatechange = updatePage;
+  send.open("GET", "relations?"+id);
+  send.send();
 
-    function updatePage()  {
-       if(this.readyState === 4 && this.status === 200) {
-        var response = this.responseText;
-        var response0 = response.split("?");
-          switch(response0[0]) {
-            case "success": success(response);break;
-            case "fail": 
-            case "noAssociate" :  
-            default : error(response0[0]);break;
-          }
-        }
+  function updatePage()  {
+    if(this.readyState === 4 && this.status === 200) {
+      var response = this.responseText;
+      var response0 = response.split("?");
+      switch(response0[0]) {
+        case "success": success(response);break;
+        case "fail": 
+        case "noAssociate" :  
+        default : error(response0[0]);break;
+      }
     }
+  }
 }
 
 

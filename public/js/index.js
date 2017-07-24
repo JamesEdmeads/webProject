@@ -1,10 +1,14 @@
+/* js for the first page. Completes login and signs up new users
+   displaying output for failed attempts
+   Also loads user into session id and whether they own the story
+*/
+
 "use strict"
 
 addEventListener('load', setUp);
 
 //for new users
-//sends details to server to update database and deals with 
-//outcomes
+//sends details to server to update database and deals with outcomes
 function newSignUp()  {
 
   var name = source("name").value;

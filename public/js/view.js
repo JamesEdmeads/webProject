@@ -1,3 +1,11 @@
+/*makes server requests to get all media associated with the user
+  creates elements according for each pic to have;
+    -associated audio
+    -option to upload audio
+    -option to record new audio
+  on upload or record sends new data to server to be processed
+*/
+
 
 var seen = [];
 var recorder;
@@ -78,6 +86,9 @@ function display()  {
   }
 }
 
+//handles above server response, checking whether images have 
+//already been processed so that each image appears only once
+//but can have multiple audio files with it
 function handleResponse(response) {
   
   if(response === "fail" || response === "isNull" || 
@@ -192,6 +203,7 @@ function addMusicUpload(node)  {
 
 }
 
+//adds new record button for each image
 function addRecord(node, parent) {
 
   var button = create("BUTTON", "record", "buttons");
@@ -205,7 +217,7 @@ function addRecord(node, parent) {
 
 }
 
-
+//sends new recorded audio to the server for processing
 function send(blob) {
 
   var formData = getForm(blob);
@@ -223,6 +235,8 @@ function send(blob) {
   }
 }
 
+//creates new form data with new audio blob and required 
+//user info for correct database storage
 function getForm(blob) {
 
   var formData = new FormData();
@@ -241,6 +255,7 @@ function getForm(blob) {
 
 }
 
+//handles server response from blob upload
 function handleSendResponse(response) {
 
   var success = false;

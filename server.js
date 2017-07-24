@@ -1,4 +1,11 @@
-//adapted from Dr Ian Holyer's server.js and server used for web project
+/*adapted from Dr Ian Holyer's server.js and server used for web project
+  written by J.Edmeads and J.Valvoda.
+  
+  listens on both http and https to re-direct users to https address
+  handles security, delivering of files and requests
+*/
+
+
 
 var http = require("http");
 var https = require("https");
@@ -13,6 +20,7 @@ var dbFunction = require("./DB/db.js");
 reDirectHTTP(8080);
 startHTTPS(4430);
 
+//creates simple HTTP server to re-direct requests
 function reDirectHTTP(port) {
 
   var service = http.createServer(reDirect)
@@ -20,6 +28,7 @@ function reDirectHTTP(port) {
 
 }
 
+//re-directs HTTP requests to HTTPS address
 function reDirect(request, response)  {
 
   response.writeHead(302, {'Location':'https://localhost:4430/index.html'});
@@ -38,7 +47,7 @@ function startHTTPS(port) {
   types = defineTypes();
   banned = [];
   banUpperCase("./public/", "");
-  var service = https.createServer(options, handleHTTPS);
+  var service = https.createServer(options, handleRequest);
   service.listen(port, "localhost");
   var address = "https://localhost";
   if (port != 80) address = address + ":" + port;
@@ -47,64 +56,67 @@ function startHTTPS(port) {
 }
 
 
-// Serve a request by delivering a file.
-function handleHTTPS(request, response) {
+// Deals with requests to server. Checks allowed request then 
+// directs to relevant function
+function handleRequest(request, response) {
 
   var url = request.url.toLowerCase();
-  var reqType = url.split("?");
-
+  var head = url.split("?");
+  console.log(url);
   if (url.endsWith("/")) url = url + "index.html";
-  if(reject(url)) return fail(response, NotFound, "URL access refused");
-  if(isBanned(url)) return fail(response, NotFound, "URL has been banned");
+  if (reject(url)) return fail(response, NotFound, "URL access refused");
+  if (isBanned(url)) return fail(response, NotFound, "URL has been banned");
+  
   var type = findType(url, request);
 
-  switch (reqType[0])  {
-    case "/newuser" : newUser(reqType[1], reqType[2], reqType[3], response, type); break;
-    case "/login" : login(reqType[1], reqType[2], response, type); break;
-    case "/associate" : associate(reqType[1], reqType[2], response, type); break;
-    case "/display" : display(reqType[1], response, type); break;
-    case "/addpic" : addPic(request, response, type); break;
-    case "/relations" : getRelations(reqType[1], response, type); break;
+  switch (head[0])  {
+    case "/newuser" : newUser(head[1], head[2], head[3], response, type); break;
+    case "/login" : login(head[1], head[2], response, type); break;
+    case "/associate" : associate(head[1], head[2], response, type); break;
+    case "/display" : display(head[1], response, type); break;
+    case "/addpic" : addVisual(request, response, type); break;
+    case "/relations" : getRelations(head[1], response, type); break;
     case "/addstory": case "/addmusic":
-      addStory(request, response, type, reqType[0]); break;
+      addAudio(request, response, type, head[0]); break;
     default: defaultReply(response, type, url);
 
   }
 
 }
 
-//inspired by
+//file copy in next two functions inspired by
 //http://www.codediesel.com/nodejs/processing-file-uploads-in-node-js/
 
+//although similarities in next two functions kept seperate to avoid
+//long multiple condtional statements
+//conversion to lowercase of names for security 
+
 // adds an image to a user's profile
-function addPic(request, response, type)  {
+function addVisual(request, response, type)  {
 
   var name0, owner0, creator;
   var form = new formidable.IncomingForm();
   
   form.parse(request) 
-
   form.on('file', function(name, file)  {name0 = file.name;});
-
   form.on('field', function(name, value) {
     if(name === 'creator') creator = value;
     else owner0 = value; 
   });
-
   form.on('end', complete);
 
   function complete(fields, files) {
     var tempPath = this.openedFiles[0].path;
     var fileName = this.openedFiles[0].name;
-    var newPath = './files/'+owner0+"/"+fileName; 
+    var newPath = './files/'+owner0+"/"+fileName.toLowerCase(); 
 
-    if(!checkPic(name0)) execute("fail");
+    if(!checkVisual(name0)) execute("fail");
     else fs0.copy(tempPath, newPath, done);
  
     function done(err) {  
       if (err) console.error(err);
       else {
-        var name1 = owner0+"/"+name0;
+        var name1 = owner0+"/"+name0.toLowerCase();
         dbFunction.addMedia(name1, newPath, creator, owner0, null, execute); 
       }
     }
@@ -115,29 +127,27 @@ function addPic(request, response, type)  {
   }
 }
 
-function addStory (request, response, type, reDirect) {
+//adds Audio to user's profile
+function addAudio (request, response, type, reDirect) {
 
   var owner0, creator, associate, name0;
   var form = new formidable.IncomingForm();
 
   form.parse(request);
-
   form.on('file', function(name, file){name0 = file.name;});
-
   form.on('field', function(name, value) {
     if(name === "creator") creator = value;
     else if(name === "assocPic") associate = value;
     else owner0 = value;
   });
-
   form.on('end', complete);
 
   function complete(fields, files) {
     var tempPath = this.openedFiles[0].path;
-    var fileName = this.openedFiles[0].name;
-    var newPath = './files/'+owner0+"/"+fileName; 
+    var fileName = this.openedFiles[0].name.toLowerCase();
+    var newPath = './files/'+owner0+"/"+fileName.toLowerCase(); 
 
-    if(!checkMusic(name0)) execute("fail");
+    if(!checkAudio(name0)) execute("fail");
     else fs0.copy(tempPath, newPath, done);
   
     function done(err) {  
@@ -161,7 +171,10 @@ function addStory (request, response, type, reDirect) {
   }
 }
 
-function checkPic(name) {
+//below two functions check type of media to ensure that pictures
+//are not stored as music and vice-versa. Checks carried out here
+//to reduce database interactions
+function checkVisual(name) {
   var check = name.split("\.")[1];
   if(check === 'jpg' || check === 'jpeg' || check === 'png') 
     return true;
@@ -169,7 +182,7 @@ function checkPic(name) {
 
 }
 
-function checkMusic(name)  {
+function checkAudio(name)  {
 
   var check = name.split("\.")[1];
   if(check === 'wav' || check === 'mp3' || check === 'aac' || check === 'ogg')
@@ -178,11 +191,7 @@ function checkMusic(name)  {
   
 }
 
-
-//all below functions wrappers for db.functions that pass execute to be used
-//on completion of database actions
-
-//gets user's associated peoplpe
+//gets user's associated people
 function getRelations(id, response, type)  {
 
   dbFunction.getPersonAssociation(id, execute);
@@ -225,7 +234,7 @@ function associate(name, owner, response, type)  {
 //checks login details
 function login(name, pw, response, type)  {
 
-  var user = dbFunction.checkUser(name, pw, execute);
+  dbFunction.checkUser(name, pw, execute);
 
   function execute(result) {
     var textTypeHeader = { "Content-Type": "text/plain" };
@@ -239,13 +248,11 @@ function login(name, pw, response, type)  {
 //adds a new user to the database
 function newUser(name, pw, owner, response, type)  {
   
-  if(owner === "true") {
-    mkdir('./files/'+name, function (err) {
-      if(err) console.log(err) //for maintenance
-    });
-  }
+  if(owner === "true") { mkdir('./files/'+name, fail); }
 
-  var user = dbFunction.addUser(name, pw, owner, execute);
+  function fail(err) { if(err) console.log(err); }
+
+  dbFunction.addUser(name, pw, owner, execute);
 
   function execute(result) {
     var textTypeHeader = { "Content-Type": "text/plain" };
@@ -266,11 +273,11 @@ function newUser(name, pw, owner, response, type)  {
 // Loads the website if it is allowed
 function defaultReply(response, type, url){ 
 
+  var temp = url.split('/');
   if (type === null) return fail(response, BadType, "File type unsupported");
   var place = url.lastIndexOf(".");
   var bit = url.substring(place);
-  if(bit === ".jpg" || bit === ".mp3" || bit === ".jpeg" || bit === ".png" 
-    || bit === ".aac" || bit === ".wav" || bit === ".ogg") {
+  if((checkVisual(bit) || checkAudio(bit)) && temp[1] != "image") { //this allows access -> hackable needed for access to files                                   //could add an and to allow access to users own file
     var file = "."+url;
   }else{
     var file = "./public" + url;
@@ -343,7 +350,7 @@ function findType(url, request) {
 }
 
 
-// Addapted to the types used
+// Addapted to the types used by website
 function defineTypes() {
 
   var types = {

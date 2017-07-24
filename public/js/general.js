@@ -4,7 +4,9 @@
 
 addEventListener('load', homeButton);
 
+//adds homebutton to all pages except first.
 function homeButton() {
+  
   try {
     var home = source('home');
     event(home, 'click', logOut);
@@ -22,6 +24,7 @@ function event(object, event, callback) {
   object.addEventListener(event, callback);
 }
 
+//general wrapper for creating any element
 function create(element, id0, classname ) {
 
   var temp = document.createElement(element);
@@ -35,6 +38,7 @@ function create(element, id0, classname ) {
 
 }
 
+//specific for creating inputs
 function createInput(id0, type0, name0, classname)  {
 
   var temp = document.createElement("INPUT");
@@ -53,6 +57,7 @@ function createInput(id0, type0, name0, classname)  {
 
 }
 
+//specific for creating media types
 function createMedia(element, source, alter, classname) {
 
   var temp = document.createElement(element);
@@ -67,6 +72,7 @@ function createMedia(element, source, alter, classname) {
 
 }
 
+//checks if object is audio
 function isAudio(part) {
 
   if(part === "mp3" || part === 'aac' || part === "ogg" || part === "wav") {
@@ -77,6 +83,7 @@ function isAudio(part) {
 
 }
 
+//checks if object is visual
 function isVisual(part) {
   
   if(part === "jpg" || part === "png" || part === "jpeg") {
@@ -87,12 +94,15 @@ function isVisual(part) {
 
 }
 
+//for log out button on each page
 function logOut() {
 
   window.location.href = "index.html";
 
 }
 
+//used to provide numbers to add to recorded stories to give
+//them unique ids
 function time() {
 
   var date = new Date();

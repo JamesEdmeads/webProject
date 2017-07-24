@@ -1,3 +1,8 @@
+/* page that allows non-owner user to associate with new accounts
+   also for new owners to set up their own stories
+   sets session storage for associates so that it can be 
+   recorded who added audio*/
+
 "use strict"
 
 addEventListener('load', setUp);

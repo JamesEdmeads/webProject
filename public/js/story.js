@@ -1,4 +1,9 @@
-
+/* Main viewing show for owners only. 
+  gets data from server and stores images and music in an array
+  display one image at a time and plays any associated audio
+  allows user to record new audio for each image
+  changes audio and images on button press
+*/
 
 addEventListener('load', setUp);
 
@@ -13,6 +18,8 @@ var audio_context;
 var recorder;
 var recording = false;
 
+//inital set up, sets up event listeners and calls
+//function to get data from server
 function setUp() {
 
   var nextImage = source('nextImage');
@@ -35,7 +42,7 @@ function setUp() {
 **          SetUp and server info           **
 *********************************************/
 
-
+//initial server call for media files
 function loadMedia() {
 
   var owner = sessionStorage.getItem('id');
@@ -52,6 +59,7 @@ function loadMedia() {
   }
 }
 
+//handles above call, ensuring images are only displayed once
 function handleLoadResponse(response) {
 
   var seen = [];
@@ -76,7 +84,7 @@ function handleLoadResponse(response) {
   } 
 }
 
-
+//handles no media returns from server
 function fail() {
   
   var response = source('response');
@@ -91,6 +99,7 @@ function fail() {
 
 }
 
+//re-directs to update page
 function update()  {
 
   window.location.href = "view.html";
@@ -102,6 +111,7 @@ function update()  {
 /**********************************************
 **                 Display Pics              **
 **********************************************/
+//sets up the image and on window resize changes image size
 function display()  {
 
   var image = source('image');
@@ -124,6 +134,7 @@ function display()  {
 
 }
 
+//changes images
 function nextPic() {
 
   current = getNext();
@@ -132,7 +143,7 @@ function nextPic() {
 
 }
 
-
+//gets position in array of next image
 function getNext() {
 
   var part;
@@ -161,12 +172,14 @@ function done(current, seen)  {
 /**********************************************
 **                 Play Audio                **
 **********************************************/
+
 function check()  {
 
   nextSong();
   
 }
 
+//loads the next song associated with the image
 function nextSong() {
   
   sound = source('sound');
@@ -188,6 +201,7 @@ function nextSong() {
 
 }
 
+//finds the next song in array associated with the image
 function getNextSong()  {
 
   var part;
@@ -205,6 +219,7 @@ function getNextSong()  {
   }
 }
 
+//switches sound off
 function muteSong() {
 
   if(!sound.paused){
@@ -237,6 +252,7 @@ function send(blob) {
   }
 }
 
+//sets up form with blob and user data for correct DB storage
 function getForm(blob) {
 
   var formData = new FormData();
@@ -254,6 +270,7 @@ function getForm(blob) {
 
 }
 
+//handles above response
 function handleResponse(response) {
 
   var result = source('response');

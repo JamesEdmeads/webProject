@@ -1,11 +1,14 @@
-server - clean more
-comments
+security flaw on files -> can access peoples photos / songs
 
 add a readme
 
 for deploy
   -> change names
   -> update certs for https
+
+
+
+
 
 
 *****************************************

@@ -7,6 +7,7 @@
 // available at: https://github.com/mattdiamond/Recorderjs
 // below function adapted from this library
 
+//initial set up for pages that record audio
 function setUpAudio() {
     try {
       window.AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -23,6 +24,7 @@ function setUpAudio() {
 
 }
 
+//starts recording or stops depending on boolean held in story.js file 
 function recordStart() {
 
   if(recording === false){
@@ -36,6 +38,7 @@ function recordStart() {
 
 }
 
+//seperate for view.js as no sound playing
 function recordStart1() {
   if(recording === false) {
     recording = true;
@@ -55,12 +58,15 @@ function startRecording() {
   recorder && recorder.record();
 }
 
+//stops the recording
 function stopRecording() {
   recorder && recorder.stop();
   processBlob();
   recorder.clear();
 }
 
+//processes blob file and send to send function in view.js
+//or story.js to be uploaded
 function processBlob() { 
   recorder && recorder.exportWAV(function(blob) {
     send(blob);

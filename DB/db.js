@@ -1,3 +1,8 @@
+/*database functions
+  all functions check incoming parameters are not empty
+  all use prepared statements to avoid sql injection
+*/
+
 "use strict";
 
 var fs = require("fs");
@@ -6,7 +11,7 @@ var exists = fs.existsSync(file);
 var sqlite3 = require("sqlite3").verbose();
 var db = new sqlite3.Database(file);
 
-//Stops association of picture with a picture then adds
+//Stops pictures being associated with another picture then adds
 //media association
 function addAssociation(name, associate, type, execute) {
 
@@ -220,6 +225,7 @@ module.exports = {
   },
 
   //returns media with each visual file followed by it's associated audio files
+  //ensures by union all that rows also returned with no associate audio
   getMedia: function(name, execute)  {
     if(name === undefined || name === null) {
       execute("isNull");
