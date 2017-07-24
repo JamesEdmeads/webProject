@@ -11,19 +11,39 @@ h1 {
 
 }
 
+.log {
+  top: -50px;
+  left: 10%;
+  right: 10%;
+  width: 80%;
+}
+
+.log2 {
+  left: 25%;
+  width:80%;
+
+
+}
+
 #newUser {
   position: absolute;
   left: -18%;
 }
 
 #existUser{
-  top: 100px;
+  top: 150px;
   left : -100px;
 }
 
 #send {
-  top: 50px;
-  left: -10px;
+  position: relative;
+  top: 0px;
+  left: 28%;
+
+}
+
+#response {
+  top: 40px;
 
 }
 

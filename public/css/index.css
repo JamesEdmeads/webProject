@@ -9,6 +9,23 @@
   display: none;
 }
 
+.log {
+  position: relative;
+  left: 20%;
+}
+
+.log2 {
+  position: relative;
+  left: 25%;
+
+}
+
+#response {
+  position: relative;
+  top: -30px;
+
+}
+
 h1 {
   position: absolute;
   left : 31%;
@@ -112,7 +129,7 @@ h1 {
 #send{
   position: relative;
   top: 40px;
-  left:35%;
+  left:150px;
 }
 
 input[type=checkbox]{

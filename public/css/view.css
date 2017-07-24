@@ -23,26 +23,45 @@ body {
 
 }
 
-.audio {
+#audioName{
   position: relative;
-  left: 275px;
-  top : -220px;
+  top: -503px;
 
 }
 
+/*actual audio*/
+.audio {
+  position: relative;
+  left: 450px;
+  top : -500px;
+
+}
+
+/*section stuff*/
+/*audio upload - upload new audio for this*/
 .audioUploadTag{
   position: relative;
-  left: 25px;
-  top: -230px;
+  top: 40px;
+  left: -120px;
 
+}
+/*record button*/
+#record {
+  background-color: red;
+}
+
+#record:hover,
+#record:focus {
+  background-color: DarkRed;
 }
 
 .musicForm {
   position: relative;
-  left: 250px;
-  top: -245px;
+  top: 20px;
 
 }
+
+/*end section*/
 
 #addMore {
   position: relative;
@@ -55,11 +74,6 @@ body {
 
 }
 
-#audioName{
-  position: relative;
-  top: -230px;
-
-}
 
 #viewButton {
   position: relative;

@@ -109,8 +109,18 @@ function display()  {
   var h = window.innerHeight;
   image.src = media[current];
   image.width = w-200;
-  image.height = h;
+  image.height = h-10;
+  image.className = "currentPic";
+  event(window, 'resize', updateSize);
   nextSong();
+  
+  function updateSize() {
+    var w = window.innerWidth;
+    var h = window.innerHeight;
+    image.width = w-200;
+    image.height = h -10;
+
+  }
 
 }
 

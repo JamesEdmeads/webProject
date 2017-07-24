@@ -1,6 +1,5 @@
-server -
-
-css:  to sort out
+server - clean more
+comments
 
 add a readme
 
@@ -11,6 +10,8 @@ for deploy
 
 *****************************************
 to do later for clean up:
+
+  pic: ratio
 
   session cookies / tables
   on request for new association -> message for owner: accept or decline

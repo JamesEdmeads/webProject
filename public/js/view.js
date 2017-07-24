@@ -2,8 +2,8 @@
 var seen = [];
 var recorder;
 var recording = false;
-var associatePic;
 var reply;
+var associatePic;
 
 addEventListener('load', setUp);
 
@@ -138,20 +138,28 @@ function appendMusic(node, next, song)  {
   name.innerHTML = temp.split("\.")[0];
   node.appendChild(name);
 
+  var b = create("BR", "none", "none");
+  node.appendChild(b);
+
   var music = createMedia("AUDIO", next, song, "audio");
   node.appendChild(music);
+
+  var br = create("BR", "none", "none");
+  node.appendChild(br);
 
 }
 
 //creates form HTML to add new music to each image file
 function addMusicUpload(node)  {
 
-  var parent = node.lastChild.alt
-  addRecord(node);
+  var section =  create("SECTION", "none", "addSection");
+  var parent = node.lastChild.alt;
+
+  addRecord(section, parent);
 
   var message = create("LABEL", "none", "audioUploadTag");
   message.innerHTML = "upload new audio for this picure:";
-  node.appendChild(message);
+  section.appendChild(message);
   
   var form = create("FORM", "none", "musicForm");
   form.action = "/addMusic?0";
@@ -178,26 +186,25 @@ function addMusicUpload(node)  {
     form.appendChild(inputs[i]);
   }
 
-  node.appendChild(form);
-  updateValues(inputs[1], inputs[2], inputs[3], form);
+  section.appendChild(form);
+  node.appendChild(section);
+  updateValues(inputs[1], inputs[2], inputs[3], form, parent);
 
 }
 
-function addRecord(node) {
+function addRecord(node, parent) {
 
   var button = create("BUTTON", "record", "buttons");
   button.innerHTML = "record story";
   event(button, 'click', getParentPic);
   node.appendChild(button);
+  function getParentPic() {
+    associatePic = parent;
+    recordStart1();
+  }
 
 }
 
-function getParentPic() {
-
-  associatePic = this.previousSibling.alt;
-  recordStart1();
-
-}
 
 function send(blob) {
 
@@ -253,10 +260,10 @@ function handleSendResponse(response) {
 
 //updates form created above for the music uploads to have the 
 //correct values
-function updateValues(input1, input2, input3, form)  {
+function updateValues(input1, input2, input3, form, parentPic)  {
 
   input1.value = sessionStorage.getItem('id');
-  input2.value = form.previousSibling.previousSibling.previousSibling.alt;
+  input2.value = parentPic;
 
   var owner = sessionStorage.getItem('owner');
 
