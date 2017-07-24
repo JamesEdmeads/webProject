@@ -1,0 +1,6 @@
+{
+  "name": "Start on Heroku: Node.js",
+  "description": "Thesis project",
+  "repository": "git+https://github.com/JamesEdmeads/webProject.git",
+  "keywords": ["node", "express", "heroku"],
+}
