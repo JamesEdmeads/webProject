@@ -1,14 +1,10 @@
 /*adapted from Dr Ian Holyer's server.js and server used for web project
   written by J.Edmeads and J.Valvoda.
-  
-  listens on both http and https to re-direct users to https address
-  handles security, delivering of files and requests
 */
 
 
 
 var http = require("http");
-var https = require("https");
 var formidable = require("formidable");
 var fs = require("fs");
 var fs0 = require('fs-extra');
@@ -17,41 +13,17 @@ var OK = 200, NotFound = 404, BadType = 415, Error = 500;
 var types, banned, parameters = "";
 var dbFunction = require("./DB/db.js");
 
-reDirectHTTP(8080);
-startHTTPS(4430);
 
-//creates simple HTTP server to re-direct requests
-function reDirectHTTP(port) {
-
-  var service = http.createServer(reDirect)
-  service.listen(port, "localhost");
-
-}
-
-//re-directs HTTP requests to HTTPS address
-function reDirect(request, response)  {
-
-  response.writeHead(302, {'Location':'https://localhost:4430/index.html'});
-  response.end();
-
-}
+startHTTP(3000);
 
 //creates server and starts listening on port
-function startHTTPS(port) {
-
-  const options = {
-    key: fs.readFileSync('key/server.key'),
-    cert: fs.readFileSync('key/server.crt')
-  }
+function startHTTP(p) {
 
   types = defineTypes();
   banned = [];
   banUpperCase("./public/", "");
-  var service = https.createServer(options, handleRequest);
-  service.listen(port, "localhost");
-  var address = "https://localhost";
-  if (port != 80) address = address + ":" + port;
-  console.log("Server running at", address);
+  var service = http.createServer(handleRequest);
+  service.listen(process.env.PORT || p);
 
 }
 

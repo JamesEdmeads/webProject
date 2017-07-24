@@ -1,13 +1,13 @@
-security flaw on files -> can access peoples photos / songs
+button names
 
-add a readme
-
+/*heroku -> must pay for ssl so remove for testing?
 for deploy
   -> change names
   -> update certs for https
 
-
-
+node version v4.2.6
+npm version 3.5.2
+git version 2.7.4
 
 
 
@@ -17,7 +17,10 @@ to do later for clean up:
   pic: ratio
 
   session cookies / tables
+    -> allow file access here fixes the security flaw
   on request for new association -> message for owner: accept or decline
+
+  add a readme
 
 
 
