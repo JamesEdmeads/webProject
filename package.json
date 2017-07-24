@@ -17,5 +17,8 @@
   "bugs": {
     "url": "https://github.com/JamesEdmeads/webProject/issues"
   },
+  "dependencies":{
+    "formidable" : "1.1.1"
+  },
   "homepage": "https://github.com/JamesEdmeads/webProject#readme"
 }
