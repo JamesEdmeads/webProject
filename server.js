@@ -12,7 +12,7 @@ var mkdir = require('mkdirp');
 var OK = 200, NotFound = 404, BadType = 415, Error = 500;
 var types, banned, parameters = "";
 //var dbFunction = require("./DB/db.js");
-var pg = require('pg');
+
 
 
 startHTTP(8080);
