@@ -15,16 +15,16 @@ var types, banned, parameters = "";
 
 
 
-startHTTP(process.env.PORT || 5000);
+startHTTP();
 
 //creates server and starts listening on port
-function startHTTP(p) {
+function startHTTP() {
 
   types = defineTypes();
   banned = [];
   banUpperCase("./public/", "");
   var service = http.createServer(handleRequest);
-  service.listen(8080);
+  service.listen(process.env.PORT || 5000);
 
 }
 
