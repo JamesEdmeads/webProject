@@ -21,7 +21,7 @@ module.exports = {
     }
     else{
       pg.connect(port, function(err, client, done) {
-        client.query('select * from person where uname = me', function(err, result)     {
+        client.query('select * from person', function(err, result)     {
       done();
       if(err) { console.error(err); execute("fail"); }
       else {
