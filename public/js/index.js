@@ -75,14 +75,14 @@ function login()  {
 
 function handleLoginResponse(res)  {
   console.log(res);
-  var response = res.split("?");
+  /*var response = res.split("?");
   var reply = source('response');
   switch(response[0])  {
     case "wrong": redo(); break;
     case "success" : loggedIn(response[1], response[2]); break;
     case "fail": reply.innerHTML = "please try again";break;
     default: window.location.href = "index.html";
-  }
+  }*/
 }
 
 //sets session storage for log-in details and re-directs

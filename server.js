@@ -11,7 +11,7 @@ var fs0 = require('fs-extra');
 var mkdir = require('mkdirp');
 var OK = 200, NotFound = 404, BadType = 415, Error = 500;
 var types, banned, parameters = "";
-//var dbFunction = require("./DB/db.js");
+var dbFunction = require("./DB/db.js");
 
 
 
@@ -211,7 +211,7 @@ function associate(name, owner, response, type)  {
 //checks login details
 function login(name, pw, response, type)  {
 
-  //dbFunction.checkUser(name, pw, execute);
+  dbFunction.checkUser(process.env.DATABASE_URL, name, pw, execute);
   execute("success");
   function execute(result) {
     var textTypeHeader = { "Content-Type": "text/plain" };
@@ -348,6 +348,7 @@ function defineTypes() {
     txt  : "text/plain",
     aac  : "audio/aac",
     mp3  : "audio/mpeg",
+    wav  : "audio/wav",
     ico  : "image/x-icon", // just for favicon.ico
   }
   return types;
