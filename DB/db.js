@@ -22,11 +22,12 @@ module.exports = {
     else{
       pg.connect(port, function(err, client, done) {
         client.query('select * from person', function(err, result)     {
-      done();
-      if(err) { console.error(err); execute("fail"); }
-      else {
-        execute("success?"+userName+"?"+result. row);
-          }
+        done();
+        if(err) { console.error("HEERERERREREREER", err); execute("fail"); }
+        else {
+          console.log("ORRRRRRRRRRRRRRRRRR");
+          execute("success?"+userName+"?"+result. row);
+        }
       });
     });
 
