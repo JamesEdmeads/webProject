@@ -15,7 +15,7 @@ var types, banned, parameters = "";
 
 
 
-startHTTP(8080);
+startHTTP(process.env.PORT || 5000);
 
 //creates server and starts listening on port
 function startHTTP(p) {
