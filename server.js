@@ -11,10 +11,11 @@ var fs0 = require('fs-extra');
 var mkdir = require('mkdirp');
 var OK = 200, NotFound = 404, BadType = 415, Error = 500;
 var types, banned, parameters = "";
-var dbFunction = require("./DB/db.js");
+//var dbFunction = require("./DB/db.js");
+var pg = require('pg');
 
 
-startHTTP(3000);
+startHTTP(8080);
 
 //creates server and starts listening on port
 function startHTTP(p) {
@@ -23,7 +24,7 @@ function startHTTP(p) {
   banned = [];
   banUpperCase("./public/", "");
   var service = http.createServer(handleRequest);
-  service.listen(process.env.PORT || p);
+  service.listen(8080);
 
 }
 
@@ -34,6 +35,7 @@ function handleRequest(request, response) {
 
   var url = request.url.toLowerCase();
   var head = url.split("?");
+  console.log("**********************************");
   console.log(url);
   if (url.endsWith("/")) url = url + "index.html";
   if (reject(url)) return fail(response, NotFound, "URL access refused");
@@ -89,7 +91,8 @@ function addVisual(request, response, type)  {
       if (err) console.error(err);
       else {
         var name1 = owner0+"/"+name0.toLowerCase();
-        dbFunction.addMedia(name1, newPath, creator, owner0, null, execute); 
+        //dbFunction.addMedia(name1, newPath, creator, owner0, null, execute); 
+        execute();
       }
     }
 
@@ -126,7 +129,8 @@ function addAudio (request, response, type, reDirect) {
       if (err) console.error(err);
       else {
         var name1 = owner0+"/"+name0;
-        dbFunction.addMedia(name1, newPath, creator, owner0, associate, execute); 
+        //dbFunction.addMedia(name1, newPath, creator, owner0, associate, execute); 
+        execute();
       }
     }
 
@@ -134,10 +138,11 @@ function addAudio (request, response, type, reDirect) {
       if(reDirect === "/addmusic") {
         renderHTML("./public/view.html", response, type);
       } else {
-      var textTypeHeader = { "Content-Type": "text/plain" };
+        renderHTML("./public/story.html");
+      /*var textTypeHeader = { "Content-Type": "text/plain" };
       response.writeHead(200, textTypeHeader);
       response.write(result);
-      response.end()
+      response.end()*/
       }
     }
   }
@@ -166,8 +171,8 @@ function checkAudio(name)  {
 //gets user's associated people
 function getRelations(id, response, type)  {
 
-  dbFunction.getPersonAssociation(id, execute);
-
+  //dbFunction.getPersonAssociation(id, execute);
+  execute("owner");
   function execute(result){
     var textTypeHeader = { "Content-Type": "text/plain" };
     response.writeHead(200, textTypeHeader);
@@ -179,8 +184,8 @@ function getRelations(id, response, type)  {
 //gets media that belongs to user
 function display(owner, response, type)  {
 
-  dbFunction.getMedia(owner, execute);
-
+  //dbFunction.getMedia(owner, execute);
+  execute("fail");
   function execute(result){
     var textTypeHeader = { "Content-Type": "text/plain" };
     response.writeHead(200, textTypeHeader);
@@ -193,8 +198,8 @@ function display(owner, response, type)  {
 //associates user with another person
 function associate(name, owner, response, type)  {
 
-  dbFunction.associate(name, owner, execute);
-
+  //dbFunction.associate(name, owner, execute);
+  execute("fail");
   function execute(result) {
     var textTypeHeader = { "Content-Type": "text/plain" };
     response.writeHead(200, textTypeHeader);
@@ -206,8 +211,8 @@ function associate(name, owner, response, type)  {
 //checks login details
 function login(name, pw, response, type)  {
 
-  dbFunction.checkUser(name, pw, execute);
-
+  //dbFunction.checkUser(name, pw, execute);
+  execute("success");
   function execute(result) {
     var textTypeHeader = { "Content-Type": "text/plain" };
     response.writeHead(200, textTypeHeader);
@@ -224,8 +229,8 @@ function newUser(name, pw, owner, response, type)  {
 
   function fail(err) { if(err) console.log(err); }
 
-  dbFunction.addUser(name, pw, owner, execute);
-
+  //dbFunction.addUser(name, pw, owner, execute);
+  execute("fail");
   function execute(result) {
     var textTypeHeader = { "Content-Type": "text/plain" };
     response.writeHead(200, textTypeHeader);
@@ -298,12 +303,17 @@ function fail(response, code, text) {
 function findType(url, request) {
 
   var header = request.headers.accept;
-  var accepts = header.split(",");
+  console.log(url);
+  console.log(header);
+  if(header !== undefined) {
+  var accepts = header.split(","); //breaks on testing
+  console.log(accepts);
+}  
   var extension;
   var ntype = "application/xhtml+xml";
   var otype = "text/html";
 
-  if (accepts.indexOf(otype) >= 0){
+  if (accepts !== undefined && accepts.indexOf(otype) >= 0){
 
     if (accepts.indexOf(ntype) >= 0){
         var dot = url.lastIndexOf(".");
@@ -314,6 +324,8 @@ function findType(url, request) {
 
     var dot = url.lastIndexOf(".");
     extension = url.substring(dot + 1);
+
+    console.log(extension);
 
   }
 

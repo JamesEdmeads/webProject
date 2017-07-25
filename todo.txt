@@ -5,6 +5,9 @@ for deploy
   -> change names
   -> update certs for https
 
+  -> no sqlite3 -> must use postresql
+  -> cant use mkdir -> fs0 or own version
+
 node version v4.2.6
 npm version 3.5.2
 git version 2.7.4
